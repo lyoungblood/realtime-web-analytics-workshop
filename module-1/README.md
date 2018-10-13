@@ -27,14 +27,13 @@ US West (N. Virginia) | [![Launch Module 1 in ](http://docs.aws.amazon.com/AWSCl
 
 ![Configuring SSH access](../images/module-1-ssh.png)
 
-4.	Click **Next**.
-
 ![Configuring CloudFormation Stack](../images/module-1-next.png)
 
+4.	Click **Next**.
 5.	Click **Next** Again. (skipping IAM advanced section)
 6.	On the Review page, check the box to acknowledge that CloudFormation will create IAM resources and click **Create**.
 
-![iam-accept](../../images/iam-accept.png)
+![iam-accept](../images/iam-accept.png)
 
 7. While you wait for the CloudFormation stack to be created, download the CloudFormation template by right-clicking here and selecting **Save File As...**: ([Module 1 Starting Template](https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-start.yaml))
 
