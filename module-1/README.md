@@ -51,7 +51,7 @@ When you see the stack showing a CREATE_COMPLETE status, you are ready to move o
 2.	At the bottom of the **Resources** section, directly above the **Outputs** section, add the resource for the analytics S3 bucket that will receive messages delivered by the Kinesis Delivery Stream:
 
 <details>
-<summary><strong>AnalyticsBucket Resource (expand for code)</strong></summary><p>
+<summary><strong>AnalyticsBucket Resource (expand for code)</strong></summary>
 
 ```
 # Kinesis Application
@@ -60,12 +60,12 @@ When you see the stack showing a CREATE_COMPLETE status, you are ready to move o
     DeletionPolicy: Retain
 ```
 
-</p></details>
+</details>
 
 3.	Add the IAM Role and Policy that will give the Kinesis Delivery Stream permissions to deliver the events directly below the S3 bucket resource:
 
 <details>
-<summary><strong>DeliveryStreamRole Resource (expand for code)</strong></summary><p>
+<summary><strong>DeliveryStreamRole Resource (expand for code)</strong></summary>
 
 ```
   DeliveryStreamRole:
@@ -106,12 +106,12 @@ When you see the stack showing a CREATE_COMPLETE status, you are ready to move o
 ```
 Note: We are following the _principle of least privilege_ by enabling resource-level permissions and referencing the `AnalyticsBucket` as `!Sub '${AnalyticsBucket.Arn}'`
 
-</p></details>
+</details>
 
 4. Next, add the Kinesis Delivery Stream resource directly below the IAM Role:
 
 <details>
-<summary><strong>DeliveryStream Resource (expand for code)</strong></summary><p>
+<summary><strong>DeliveryStream Resource (expand for code)</strong></summary>
 
 ```
   DeliveryStream:
@@ -128,7 +128,7 @@ Note: We are following the _principle of least privilege_ by enabling resource-l
 ```
 Note: By setting `IntervalInSeconds` to `60` and `SizeInMBs` to `1`, we are configuring the Kinesis Delivery Stream to deliver events to the S3 bucket whenever either 60 seconds has elapsed, or more than 1MB of event data is in the stream.  Whenever either of these conditions is met, the events will be delivered.
 
-</p></details>
+</details>
 
 </p></details>
 
