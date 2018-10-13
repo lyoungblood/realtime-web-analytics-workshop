@@ -44,11 +44,13 @@ When you see the stack showing a CREATE_COMPLETE status, you are ready to move o
 
 ## 2. Add the Kinesis Resources to the CloudFormation Template 
 
+During this step, you will create an S3 analytics bucket resource, as well as a Kinesis Firehose Delivery Stream that will deliver events to it.  You'll also need to configure an IAM role that gives the Kinesis Delivery Stream permission to deliver events to the S3 analytics bucket.
+
 <details>
 <summary><strong>Edit the CloudFormation template (expand for details)</strong></summary><p>
 
-### 1.	Open the CloudFormation template you downloaded in the previous step in an editor.  
-### 2.	At the bottom of the **Resources** section, directly above the **Outputs** section, add the resource for the analytics S3 bucket that will receive messages delivered by the Kinesis Delivery Stream:
+1.	Open the CloudFormation template you downloaded in the previous step in an editor.  
+2.	At the bottom of the **Resources** section, directly above the **Outputs** section, add the resource for the analytics S3 bucket that will receive messages delivered by the Kinesis Delivery Stream:  
 
 <details>
 <summary><strong>AnalyticsBucket Resource (expand for code)</strong></summary>
@@ -62,7 +64,7 @@ When you see the stack showing a CREATE_COMPLETE status, you are ready to move o
 
 </details>
 
-### 3.	Add the IAM Role and Policy that will give the Kinesis Delivery Stream permissions to deliver the events directly below the S3 bucket resource:
+3.	Add the IAM Role and Policy that will give the Kinesis Delivery Stream permissions to deliver the events directly below the S3 bucket resource:  
 
 <details>
 <summary><strong>DeliveryStreamRole Resource (expand for code)</strong></summary>
@@ -108,7 +110,7 @@ Note: We are following the _principle of least privilege_ by enabling resource-l
 
 </details>
 
-### 4. Next, add the Kinesis Delivery Stream resource directly below the IAM Role:
+4. Next, add the Kinesis Delivery Stream resource directly below the IAM Role:  
 
 <details>
 <summary><strong>DeliveryStream Resource (expand for code)</strong></summary>
@@ -132,18 +134,71 @@ Note: By setting `IntervalInSeconds` to `60` and `SizeInMBs` to `1`, we are conf
 
 </p></details>
 
-## Validation Step
+## 3. Configure the Kinesis Agent on the AutoScaling Group of Web Servers
+
+Every AutoScaling Group has a Launch Configuration that is used to configure the EC2 instances when they are launched.  During this next step, you'll modify the existing Launch Configuration in the CloudFormation template, configuring the Kinesis agent to install, start automatically on boot, and stream Apache log events to the Kinesis Delivery Stream that we created in the previous section.  You'll also need to modify the EC2 instance IAM role to give the EC2 instances permission to send events to the Kinesis Delivery Stream.
 
 <details>
-<summary><strong>Verify sample data exists on your EC2 instance (expand for details)</strong></summary><p>
+<summary><strong>Edit the CloudFormation template (expand for details)</strong></summary><p>
 
-Once you have connected to the Windows Instance via RDP, open the File Explorer and verify that there is a C: drive and a D: drive and that there are JPEG files in the D: drive.
+1.	In the CloudFormation template that you're editing from the previous step, go to line 333, which is where the `AutoScalingGroupLaunchConfig` resource definition begins.  
 
-(Optionally) You can add your own unqiue file data to the d: volume by creating a text file or downloading images via firefox within the RDP session.
+2.  In the `Metadata` section, under `AWS::CloudFormation::Init`, `config`, `packages`, and `yum`, add a line that contains `aws-kinesis-agent: []` (be sure to use the same indentation as the line with `httpd: []`)
+<details>
+<summary><strong>See this edit in context (expand for code)</strong></summary>
 
-![scenario-1-module-1-Picture5](../../images/scenario-1-module-1-Picture5.png)
+```YAML
+  AutoScalingGroupLaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          packages:
+            yum:
+              httpd: []
+              aws-kinesis-agent: []
+          files:
+<snip>
+```
+</details>
 
-You now have a Windows instance in Ireland (eu-west-1) that contains a boot volume and a data volume. The secondary volume and it's data will be used as sample data for the other modules in this workshop.
+3.  In the `files` section of the same resource, directly underneath `packages`, add the file `/etc/aws-kinesis/agent.json` with the following configuration:
+
+<details>
+<summary><strong>See this edit in context (expand for code)</strong></summary>
+
+```YAML
+          packages:
+            yum:
+              httpd: []
+              aws-kinesis-agent: []
+          files:
+            /etc/aws-kinesis/agent.json:
+              content: !Sub |
+                { "cloudwatch.emitMetrics": false,
+                 "maxBufferAgeMillis":"1000",
+                 "firehose.endpoint": "https://firehose.${AWS::Region}.amazonaws.com",
+                 "flows": [
+                   {
+                     "filePattern": "/var/log/httpd/access_log*",
+                     "deliveryStream": "${DeliveryStream}",
+                     "partitionKeyOption": "RANDOM",
+                     "dataProcessingOptions": [
+                     {
+                          "optionName": "LOGTOJSON",
+                          "logFormat":"COMBINEDAPACHELOG",
+                          "matchPattern": "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}) ([0-9]+) \"(.+?)\" \"(.+?)\" \"(.+?)\" \"(.+?)\" \"(.+?)\"$",
+                          "customFieldNames": ["host", "ident", "authuser", "datetime", "request", "response", "bytes", "referrer", "agent", "event", "clientid", "page"]
+                     }
+                     ]
+                   }
+                 ]
+                }
+            /var/www/html/index.html:
+<snip>
+```
+</details>
+
 </p></details>
 
 ### Start next module
@@ -152,6 +207,12 @@ Module 2: [Migrate data to an AWS Storage Gateway volume](../module-2/README.md)
 
 ## License
 
-This library is licensed under the Amazon Software License.
+Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
-[Back to the main workshop scenarios page](../../README.md)
+Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
+
+http://aws.amazon.com/apache2.0/
+
+or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+[Back to the main workshop page](../README.md)
