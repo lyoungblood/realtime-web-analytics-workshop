@@ -1,4 +1,4 @@
-#  Configure a fleet of Web Servers to stream Clickstream data to a Kinesis Firehose delivery stream
+#  Configure a fleet of Web Servers to send Clickstream data to a Kinesis Firehose delivery stream
 
 ## Introduction
 
@@ -8,7 +8,7 @@ In this module, you will start with an AutoScaling group of Apache web servers, 
 
 ![module-1-diagram](../images/module-1.png)
 
-### 1. Deploy Web Servers using CloudFormation Template
+## 1. Deploy Web Servers using CloudFormation Template
 
 First we need to deploy our web servers in an AutoScaling group, with an Application Load Balancer to accept incoming connections, and scaling policies to scale out (and back in) based on incoming network traffic.
 
@@ -35,31 +35,80 @@ US West (N. Virginia) | [![Launch Module 1 in ](http://docs.aws.amazon.com/AWSCl
 
 ![iam-accept](../images/iam-accept.png)
 
-7. While you wait for the CloudFormation stack to be created, download the CloudFormation template by right-clicking here and selecting **Save File As...**: ([Module 1 Starting Template](https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-start.yaml))
+7. While you wait for the CloudFormation stack to be created, download the CloudFormation template by right-clicking here and selecting **Save Link As...**: ([Module 1 Starting Template](https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-start.yaml))
+8. Open the template you just downloaded in a text editor.  If you don't have a text editor, you can download a trial of Sublime Text here: ([Sublime Text](https://www.sublimetext.com))
 
 When you see the stack showing a CREATE_COMPLETE status, you are ready to move on to the next step.
 
 </p></details>
 
-## 2. Connect the EC2 instance in Ireland (eu-west-1) via RDP
+## 2. Add the Kinesis Resources to the CloudFormation Template 
 
 <details>
-<summary><strong>Connect to your EC2 instance (expand for details)</strong></summary><p>
+<summary><strong>Edit the CloudFormation template (expand for details)</strong></summary><p>
 
-1.	From the AWS console, click **Services** and select **EC2**  
-2.	Select **Instances** from the menu on the left.
-3.	Wait until the newly create instance shows as *running*.
-4. Right click on your newly provisoined instance and select **connect** from the menu.
-
-![scenario-1-module-1-Picture3](../../images/scenario-1-module-1-Picture3.png)
-
-5. Click **Get Password** and select your file .pem (Key Pair), this will decrypt ec2 instance administrator password. Keep a copy of the password for your RDP client.
-6. Click **Download Remote Desktop File** and open the file with your RDP client
-7. Use the password from step 5 to authenticate and connect your RDP client to your windows instance
-
-Note: For detailed instructions on How To connect to your Windows instance using an RDP client ([Connecting to Your Windows Instance](http://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/connecting_to_windows_instance.html)).
-
-![scenario-1-module-1-Picture4](../../images/scenario-1-module-1-Picture4.png)
+1.	Open the CloudFormation template you downloaded in the previous step in an editor.  
+2.	At the bottom of the **Resources** section, directly above the **Outputs** section, add the resource for the analytics S3 bucket that will receive messages delivered by the Kinesis Delivery Stream:
+```
+# Kinesis Application
+  AnalyticsBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+```
+3.	Add the IAM Role and Policy that will give the Kinesis Delivery Stream permissions to deliver the events directly below the S3 bucket resource:
+```
+  DeliveryStreamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - firehose.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: s3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ''
+                Effect: Allow
+                Action:
+                  - s3:AbortMultipartUpload
+                  - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:ListBucketMultipartUploads
+                  - s3:PutObject
+                Resource:
+                  - !Sub '${AnalyticsBucket.Arn}'
+                  - !Sub '${AnalyticsBucket.Arn}/*'
+              - Sid: ''
+                Effect: Allow
+                Action:
+                  - logs:PutLogEvents
+                Resource:
+                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/*:log-stream:*'
+```
+Note: We are following the _principle of least privilege_ by enabling resource-level permissions and referencing the `AnalyticsBucket` as `!Sub '${AnalyticsBucket.Arn}'`
+4. Next, add the Kinesis Delivery Stream resource directly below the IAM Role:
+```
+  DeliveryStream:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !Sub '${AnalyticsBucket.Arn}'
+        BufferingHints:
+          IntervalInSeconds: '60'
+          SizeInMBs: '1'
+        CompressionFormat: UNCOMPRESSED
+        RoleARN: !GetAtt 'DeliveryStreamRole.Arn'
+```
+Note: By setting `IntervalInSeconds` to `60` and `SizeInMBs` to `1`, we are configuring the Kinesis Delivery Stream to deliver events to the S3 bucket whenever either 60 seconds has elapsed, or more than 1MB of event data is in the stream.  Whenever either of these conditions is met, the events will be delivered.
 </p></details>
 
 ## Validation Step

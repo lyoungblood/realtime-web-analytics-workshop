@@ -8,17 +8,17 @@ In this workshop we will build a cost optimized platform to capture web beacon t
 
 ## Module 1 – Capturing Realtime Clickstream Events from Web Servers
 
-In this module, you will start with an AutoScaling Group of Apache web servers, representing the front-end of your existing website or application.  The AutoScaling Group receives incoming connections from an Application Load Balancer, and is configured to automatically scale out (and back in) based on the amount of incoming network traffic received by the web servers.
+In this module, you will start with an AutoScaling Group of Apache web servers, representing the front-end of your existing website or application.  The AutoScaling Group receives incoming connections from an Application Load Balancer, and is configured to automatically scale out (and back in) based on the amount of incoming network traffic received by the web servers:
 
 ![Frontend Web Server AutoScaling Group](images/module-1-start.png)
 
-You will then create an S3 analytics bucket that will store an archive of all the clickstream events for historical analysis, and create a Kinesis Firehose delivery stream that will deliver messages to the S3 analytics bucket.  You'll add a Kinesis agent to the fleet of web servers and configure it to send messages that appear in the Apache access logs to the Kinesis Firehose delivery stream.  
+You will then create an S3 analytics bucket that will store an archive of all the clickstream events for historical analysis, and create a Kinesis Firehose delivery stream that will deliver messages to the S3 analytics bucket.  You'll add a Kinesis agent to the fleet of web servers and configure it to send messages that appear in the Apache access logs to the Kinesis Firehose delivery stream: 
 
 ![Kinesis Agent and Kinesis Data Firehose](images/module-1.png)
 
 In this scenario, you will leverage Amazon S3, Amazon EC2 Linux Instances, AutoScaling, Amazon Kinesis Data Firehose, and CloudFormation to automate the initial deployment, as well as changes to the stack.
 
-[Get started on module 1](module-1/README.md)
+[Get Started on Module 1](module-1/README.md)
 
 ## Module 2 – Performing Realtime Analytics with Kinesis Analytics
 
