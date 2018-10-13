@@ -60,7 +60,7 @@ When you see the stack showing a CREATE_COMPLETE status, you are ready to move o
     DeletionPolicy: Retain
 ```
 
-</details>
+</details><br>
 
 3.	Add the IAM Role and Policy that will give the Kinesis Delivery Stream permissions to deliver the events directly below the S3 bucket resource:
 
@@ -106,7 +106,7 @@ When you see the stack showing a CREATE_COMPLETE status, you are ready to move o
 ```
 Note: We are following the _principle of least privilege_ by enabling resource-level permissions and referencing the `AnalyticsBucket` as `!Sub '${AnalyticsBucket.Arn}'`
 
-</details>
+</details><br>
 
 4. Next, add the Kinesis Delivery Stream resource directly below the IAM Role:
 
@@ -128,7 +128,7 @@ Note: We are following the _principle of least privilege_ by enabling resource-l
 ```
 Note: By setting `IntervalInSeconds` to `60` and `SizeInMBs` to `1`, we are configuring the Kinesis Delivery Stream to deliver events to the S3 bucket whenever either 60 seconds has elapsed, or more than 1MB of event data is in the stream.  Whenever either of these conditions is met, the events will be delivered.
 
-</details>
+</details><br>
 
 </p></details>
 
