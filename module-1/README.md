@@ -1,16 +1,16 @@
-#  Configure a fleet of web servers to stream Apache log data to a Kinesis delivery stream
+#  Configure a fleet of Web Servers to stream Clickstream data to a Kinesis Firehose delivery stream
 
 ## Introduction
 
-In this module, you will start with an autoscaling group of Apache web servers, and reconfigure them to stream their log data in realtime to a Kinesis Firehose delivery stream. This will prepare for us to perform realtime analytics on the events being captured in these logs.
+In this module, you will start with an AutoScaling group of Apache web servers, and configure them to stream their log data in realtime to a Kinesis Firehose delivery stream. This will prepare for us to perform realtime analytics on the events being captured in these logs.
 
-## Architecture overview
+## Architecture Overview
 
 ![module-1-diagram](../images/module-1.png)
 
 ### 1. Deploy Web Servers using CloudFormation Template
 
-First we need to deploy our web servers in an autoscaling group, with an Application Load Balancer to accept incoming connections, and scaling policies to scale out based on incoming network traffic.
+First we need to deploy our web servers in an AutoScaling group, with an Application Load Balancer to accept incoming connections, and scaling policies to scale out (and back in) based on incoming network traffic.
 
 <details>
 <summary><strong>CloudFormation Launch Instructions (expand for details)</strong></summary><p>
@@ -24,18 +24,21 @@ US West (N. Virginia) | [![Launch Module 1 in ](http://docs.aws.amazon.com/AWSCl
 
 2.	Click **Next** on the Select Template page.
 3.	**(Optional)** If you'd like to login to the web servers, select an **SSH Keypair** for this region, select True next to **Enable SSH**, and enter a CIDR block such as `0.0.0.0/0` next to **Enable SSH From**. If you don't have a key pair already created, see ([Creating a key pair using amazon EC2](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair))
+
+![Configuring SSH access](../images/module-1-ssh.png)
+
 4.	Click **Next**.
 
-![scenario-1-module-1-Picture1](../../images/scenario-1-module-1-Picture1.png)
+![Configuring CloudFormation Stack](../images/module-1-next.png)
 
-7.	Click **Next** Again. (skipping IAM advanced section)
-8.	On the Review page, check the box to acknowledge that CloudFormation will create IAM resources and click **Create**.
+5.	Click **Next** Again. (skipping IAM advanced section)
+6.	On the Review page, check the box to acknowledge that CloudFormation will create IAM resources and click **Create**.
 
 ![iam-accept](../../images/iam-accept.png)
 
-Once the CloudFormation stack shows a status of CREATE_COMPLETE, you are ready to move on to the next step.
+7. While you wait for the CloudFormation stack to be created, download the CloudFormation template by right-clicking here and selecting **Save File As...**: ([Module 1 Starting Template](https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-start.yaml))
 
-Note: Instances that are launched as part of this CloudFormation template may be in the initializing state for few minutes.
+When you see the stack showing a CREATE_COMPLETE status, you are ready to move on to the next step.
 
 </p></details>
 
