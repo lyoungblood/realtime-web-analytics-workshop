@@ -147,7 +147,8 @@ Every AutoScaling Group has a Launch Configuration that is used to configure the
 <details>
 <summary><strong>See this edit in context (expand for code)</strong></summary>
 
-<code lang="YAML" start=333>
+```YAML
+<line 332>
   AutoScalingGroupLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
     Metadata:
@@ -158,7 +159,9 @@ Every AutoScaling Group has a Launch Configuration that is used to configure the
               httpd: []
               aws-kinesis-agent: []
           files:
-</code>
+<line 343>
+```
+
 </details>
 
 3.  In the `files` section of the same resource, directly underneath `packages`, add the file `/etc/aws-kinesis/agent.json` with the following configuration:
@@ -167,7 +170,7 @@ Every AutoScaling Group has a Launch Configuration that is used to configure the
 <summary><strong>See this edit in context (expand for code)</strong></summary>
 
 ```YAML
-<snip>
+<line 337>
           packages:
             yum:
               httpd: []
@@ -195,7 +198,54 @@ Every AutoScaling Group has a Launch Configuration that is used to configure the
                  ]
                 }
             /var/www/html/index.html:
-<snip>
+<line 365>
+```
+</details>
+
+4.  In the `commands` section of the same resource, after line number 390, add the following two commands, which will execute `chkconfig` to add the `aws-kinesis-agent` to `/etc/init.d` and enable it by symlinking it into the appropriate `/etc/rcX.d` directories so that it will launch on startup:
+
+<details>
+<summary><strong>See this edit in context (expand for code)</strong></summary>
+
+```YAML
+<line 390>
+            ad-add-service-aws-kinesis-agent:
+              command: chkconfig --add aws-kinesis-agent
+            ae-add-service-startup-aws-kinesis-agent:
+              command: chkconfig aws-kinesis-agent on
+<line 395>
+```
+</details>
+
+5.  Next, also in the `commands` section of the same resource, after line number 408, add the following command, which will modify the Apache log format to include a data header:
+
+<details>
+<summary><strong>See this edit in context (expand for code)</strong></summary>
+
+```YAML
+<line 408>
+            ca-add-data-header:
+              command: sed -i 's/LogFormat "%h %l %u %t \\"%r\\" %>s %b \\"%{Referer}i\\"
+                \\"%{User-Agent}i\\"" combined/LogFormat "%h %l %u %t \\"%r\\" %>s
+                %b \\"%{Referer}i\\" \\"%{User-Agent}i\\" \\"%{event}i\\" \\"%{clientid}i\\"
+                \\"%{page}i\\"" combined/' /etc/httpd/conf/httpd.conf
+<line 415>
+```
+</details>
+
+6.  Finishing the CloudFormation edits, we need to add the `aws-kinesis-agent` to the `services` section of the same resource, directly after line number 420.  This will ensure that the service is running:
+
+<details>
+<summary><strong>See this edit in context (expand for code)</strong></summary>
+
+```YAML
+<line 420>
+              aws-kinesis-agent:
+                enabled: 'true'
+                ensureRunning: 'true'
+                files:
+                  - /etc/init.d/aws-kinesis-agent
+<line 426>
 ```
 </details>
 
