@@ -147,7 +147,7 @@ Every AutoScaling Group has a Launch Configuration that is used to configure the
 <details>
 <summary><strong>See this edit in context (expand for code)</strong></summary>
 
-```YAML
+<code lang="YAML" start=333>
   AutoScalingGroupLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
     Metadata:
@@ -158,8 +158,7 @@ Every AutoScaling Group has a Launch Configuration that is used to configure the
               httpd: []
               aws-kinesis-agent: []
           files:
-<snip>
-```
+</code>
 </details>
 
 3.  In the `files` section of the same resource, directly underneath `packages`, add the file `/etc/aws-kinesis/agent.json` with the following configuration:
@@ -168,6 +167,7 @@ Every AutoScaling Group has a Launch Configuration that is used to configure the
 <summary><strong>See this edit in context (expand for code)</strong></summary>
 
 ```YAML
+<snip>
           packages:
             yum:
               httpd: []
