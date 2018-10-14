@@ -332,7 +332,7 @@ When you see the stack showing a **UPDATE_COMPLETE** status, you are ready to mo
 To confirm that everything is setup properly, we can verify that events are being delivered from the web servers to the S3 analytics bucket by the Kinesis Firehose Delivery Stream.
 
 <details>
-<summary><strong>CloudFormation Update Instructions (expand for details)</strong></summary><p>
+<summary><strong>Kinesis Firehose Delivery Stream verification (expand for details)</strong></summary><p>
 
 1.	Navigate in the AWS console to **Services**, then **S3**.
 2.  Find the analytics bucket.  If you used the default stack name, it will be called `realtime-analytics-workshop-analyticsbucket-...` (with a random string at the end).  Click on the bucket to navigate into the object structure.  It should look something like this (with the current year as the only top-level folder):
