@@ -55,7 +55,7 @@ During this step, you will create an S3 analytics bucket resource, as well as a 
 <details>
 <summary><strong>AnalyticsBucket Resource (expand for code)</strong></summary>
 
-```
+```YAML
 # Kinesis Application
   AnalyticsBucket:
     Type: AWS::S3::Bucket
@@ -69,7 +69,7 @@ During this step, you will create an S3 analytics bucket resource, as well as a 
 <details>
 <summary><strong>DeliveryStreamRole Resource (expand for code)</strong></summary>
 
-```
+```YAML
   DeliveryStreamRole:
     Type: AWS::IAM::Role
     Properties:
@@ -115,7 +115,7 @@ Note: We are following the _principle of least privilege_ by enabling resource-l
 <details>
 <summary><strong>DeliveryStream Resource (expand for code)</strong></summary>
 
-```
+```YAML
   DeliveryStream:
     Type: AWS::KinesisFirehose::DeliveryStream
     Properties:
