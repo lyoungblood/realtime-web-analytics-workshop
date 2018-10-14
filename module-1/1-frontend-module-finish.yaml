@@ -671,6 +671,3 @@ Outputs:
   BeaconServerUrl:
     Description: URL for beacon web servers.
     Value: !Sub http://${ApplicationLoadBalancer.DNSName}/beacon
-#  TestScriptUrl:
-#    Description: Link to download test-beacon.py for testing your beacon servers.
-#    Value: !Sub 'https://s3.${AWS::Region}.amazonaws.com/${WebsiteBucket}/test-beacon.py'
