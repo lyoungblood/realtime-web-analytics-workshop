@@ -1,0 +1,174 @@
+{
+    "Records": [
+        {
+            "eventID": "da6ec179a8defe4e44088ddf869b00f6",
+            "eventName": "INSERT",
+            "eventVersion": "1.1",
+            "eventSource": "aws:dynamodb",
+            "awsRegion": "us-west-2",
+            "dynamodb": {
+                "ApproximateCreationDateTime": 1539906180,
+                "Keys": {
+                    "EventTimestamp": {
+                        "N": "1538515220002"
+                    },
+                    "MetricType": {
+                        "S": "event_count"
+                    }
+                },
+                "NewImage": {
+                    "EventTimestamp": {
+                        "N": "1538515220002"
+                    },
+                    "MetricType": {
+                        "S": "event_count"
+                    },
+                    "MetricDetails": {
+                        "L": [
+                            {
+                                "M": {
+                                    "EVENTTIMESTAMP": {
+                                        "N": "1538515220000"
+                                    },
+                                    "UNITVALUEFLOAT": {
+                                        "NULL": true
+                                    },
+                                    "UNITVALUEINT": {
+                                        "N": "21"
+                                    },
+                                    "METRICITEM": {
+                                        "S": "exception"
+                                    },
+                                    "METRICTYPE": {
+                                        "S": "event_count"
+                                    }
+                                }
+                            },
+                            {
+                                "M": {
+                                    "EVENTTIMESTAMP": {
+                                        "N": "1538515220000"
+                                    },
+                                    "UNITVALUEFLOAT": {
+                                        "NULL": true
+                                    },
+                                    "UNITVALUEINT": {
+                                        "N": "16"
+                                    },
+                                    "METRICITEM": {
+                                        "S": "login"
+                                    },
+                                    "METRICTYPE": {
+                                        "S": "event_count"
+                                    }
+                                }
+                            },
+                            {
+                                "M": {
+                                    "EVENTTIMESTAMP": {
+                                        "N": "1538515220000"
+                                    },
+                                    "UNITVALUEFLOAT": {
+                                        "NULL": true
+                                    },
+                                    "UNITVALUEINT": {
+                                        "N": "13"
+                                    },
+                                    "METRICITEM": {
+                                        "S": "pageview"
+                                    },
+                                    "METRICTYPE": {
+                                        "S": "event_count"
+                                    }
+                                }
+                            },
+                            {
+                                "M": {
+                                    "EVENTTIMESTAMP": {
+                                        "N": "1538515220000"
+                                    },
+                                    "UNITVALUEFLOAT": {
+                                        "NULL": true
+                                    },
+                                    "UNITVALUEINT": {
+                                        "N": "12"
+                                    },
+                                    "METRICITEM": {
+                                        "S": "playvideo"
+                                    },
+                                    "METRICTYPE": {
+                                        "S": "event_count"
+                                    }
+                                }
+                            },
+                            {
+                                "M": {
+                                    "EVENTTIMESTAMP": {
+                                        "N": "1538515220000"
+                                    },
+                                    "UNITVALUEFLOAT": {
+                                        "NULL": true
+                                    },
+                                    "UNITVALUEINT": {
+                                        "N": "21"
+                                    },
+                                    "METRICITEM": {
+                                        "S": "conversion"
+                                    },
+                                    "METRICTYPE": {
+                                        "S": "event_count"
+                                    }
+                                }
+                            },
+                            {
+                                "M": {
+                                    "EVENTTIMESTAMP": {
+                                        "N": "1538515220000"
+                                    },
+                                    "UNITVALUEFLOAT": {
+                                        "NULL": true
+                                    },
+                                    "UNITVALUEINT": {
+                                        "N": "16"
+                                    },
+                                    "METRICITEM": {
+                                        "S": "logoff"
+                                    },
+                                    "METRICTYPE": {
+                                        "S": "event_count"
+                                    }
+                                }
+                            },
+                            {
+                                "M": {
+                                    "EVENTTIMESTAMP": {
+                                        "N": "1538515220000"
+                                    },
+                                    "UNITVALUEFLOAT": {
+                                        "NULL": true
+                                    },
+                                    "UNITVALUEINT": {
+                                        "N": "13"
+                                    },
+                                    "METRICITEM": {
+                                        "S": "click"
+                                    },
+                                    "METRICTYPE": {
+                                        "S": "event_count"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "ExpireTime": {
+                        "N": "1538515824800"
+                    }
+                },
+                "SequenceNumber": "92138000000000026496434410",
+                "SizeBytes": 794,
+                "StreamViewType": "NEW_IMAGE"
+            },
+            "eventSourceARN": "arn:aws:dynamodb:us-west-2:703274262351:table/realtime-analytics-MetricDetails/stream/2018-10-18T22:24:09.625"
+        }
+    ]
+}
