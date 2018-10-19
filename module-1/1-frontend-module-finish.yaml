@@ -264,7 +264,7 @@ Resources:
       Tags:
         - Key: "Name"
           Value: !Sub '${AWS::StackName}-beacon-web-server'
-          PropagateAtLaunch: "true"
+          PropagateAtLaunch: true
     CreationPolicy:
       ResourceSignal:
         Timeout: PT15M
@@ -302,7 +302,7 @@ Resources:
     Type: AWS::AutoScaling::ScalingPolicy
     Properties:
       AdjustmentType: ChangeInCapacity
-      Cooldown: 300
+      Cooldown: '300'
       AutoScalingGroupName: !Ref AutoScalingGroup
       ScalingAdjustment: 1
 
@@ -327,7 +327,7 @@ Resources:
     Type: AWS::AutoScaling::ScalingPolicy
     Properties:
       AdjustmentType: ChangeInCapacity
-      Cooldown: 180
+      Cooldown: '180'
       AutoScalingGroupName: !Ref AutoScalingGroup
       ScalingAdjustment: -1
 
@@ -515,7 +515,7 @@ Resources:
           ToPort: 80
           SourceSecurityGroupId: !Ref ALBSecurityGroup
       SecurityGroupEgress:
-        - IpProtocol: -1
+        - IpProtocol: '-1'
           CidrIp: 0.0.0.0/0
 
   SSHAccessSecurityGroupRule:
@@ -652,8 +652,8 @@ Resources:
       S3DestinationConfiguration:
         BucketARN: !Sub '${AnalyticsBucket.Arn}'
         BufferingHints:
-          IntervalInSeconds: '60'
-          SizeInMBs: '1'
+          IntervalInSeconds: 60
+          SizeInMBs: 1
         CompressionFormat: UNCOMPRESSED
         RoleARN: !GetAtt 'DeliveryStreamRole.Arn'
 
