@@ -26,11 +26,17 @@ Lorem ipsum...
 
 [Get started on module 2](module-2/README.md)
 
-## Module 3 - Adding Custom Metrics and Extending the Solution
+## Module 3 - Visualizing Metrics using CloudWatch Dashboards
 
 Lorem ipsum...
 
 [Get started on module 3](module-3/README.md)
+
+## Module 4 - Adding Custom Metrics and Extending the Solution
+
+Lorem ipsum...
+
+[Get started on module 4](module-4/README.md)
 
 ## License
 

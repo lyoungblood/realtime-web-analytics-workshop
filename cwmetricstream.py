@@ -19,13 +19,13 @@ def lambda_handler(event, context):
     events_float = defaultdict(float)
     for record in event['Records']:
         for metric in record['dynamodb']['NewImage']['MetricDetails']['L']:
-            try: event_type = metric['M']['METRICTYPE']['S']
+            try: event_type = metric['M']['METRICITEM']['S']
             except Exception as e:
                 event_type='NULL'
             try: event_timestamp = metric['M']['EVENTTIMESTAMP']['N']
             except Exception as e:
                 event_timestamp='NULL'
-            if metric['M']['UNITVALUEFLOAT']['NULL']: # Is this an integer metric?
+            if 'NULL' in metric['M']['UNITVALUEFLOAT']: # Is this an integer metric?
                 try: event_value = metric['M']['UNITVALUEINT']['N']
                 except Exception as e:
                     event_value='NULL'
@@ -33,13 +33,17 @@ def lambda_handler(event, context):
                 try: event_value = metric['M']['UNITVALUEFLOAT']['N']
                 except Exception as e:
                     event_value='NULL'
-
+                try: event_type_list = metric['M']['METRICITEM']['S'].split(':')
+                except Exception as e:
+                    event_type='NULL'
+                if event_type!='NULL':
+                    event_type=event_type_list[0]
             if event_timestamp!='NULL':
                 timestamp = float(event_timestamp) / 1000
                 event_time = datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%dT%H:%M:%S')
       
             if event_type!='NULL' and event_timestamp!='NULL':
-                if metric['M']['UNITVALUEFLOAT']['NULL']:
+                if 'NULL' in metric['M']['UNITVALUEFLOAT']:
                     events_int[(event_type, event_time)] = int(event_value)
                 else:
                     events_float[(event_type, event_time)] = float(event_value)
