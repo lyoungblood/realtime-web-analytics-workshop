@@ -36,7 +36,7 @@ You'll learn how to capture the table activity with ([DynamoDB Streams](https://
 
 ![Final Architecture Diagram](images/Realtime-Website-Analytics-Diagram.png)
 
-In this scenario, you will leverage DynamoDB Streams, AWS Lambda, CloudWatch Metrics and Dashboards.
+In this scenario, you will leverage Amazon DynamoDB Streams, AWS Lambda, Amazon CloudWatch Metrics and Dashboards.
 
 [Get started on module 3](module-3/README.md)
 
