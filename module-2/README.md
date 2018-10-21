@@ -17,15 +17,23 @@ If you have already completed module #1, you can update the existing stack with 
 
 1.	Navigate to the CloudFormation serviice in the AWS Console.
 2.  Check the box for the stack you created in module #1.
+
 ![Select Stack](../images/2-select-stack.png)
+
 3.  Click Actions and Update Stack from the menu.
+
 ![Update Stack](../images/2-update-stack.png)
+
 4.  Click Choose File and select the 2-kinesis-analytics-module-start.yaml from your local module-2 folder cloned from this git repository.
+
 ![Choose File](../images/2-choose-file.png)
+
 5.  Click **Next**.
 6.  Click **Next**.
 7.  Check the box indicating acknowledgement that the stack will create IAM Roles.
+
 ![Ack IAM](../images/2-capabilities-iam.png)
+
 8.  Click the **Update** button in the lower right.
 
 </p></details>
