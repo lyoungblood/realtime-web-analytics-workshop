@@ -8,348 +8,262 @@ In this module, which builds on our previous modules, you will start with realti
 
 ![module-3-diagram](../images/Realtime-Website-Analytics-Diagram.png)
 
-## 1. Deploy Web Servers using CloudFormation Template
+## 1. Create a DynamoDB Stream
 
-First we need to deploy our web servers in an AutoScaling group, with an Application Load Balancer to accept incoming connections, and scaling policies to scale out (and back in) based on incoming network traffic.
+First, we need to create a DynamoDB Stream from the `realtime-analytics-MetricDetails` DynamoDB table.
 
 <details>
-<summary><strong>CloudFormation Launch Instructions (expand for details)</strong></summary><p>
+<summary><strong>DynamoDB Stream creation (expand for details)</strong></summary>
 
-1.	Right click the **Launch Stack** link below and "open in new tab"
+1.  Open the AWS console in a web browser and navigate to **Services**, **DynamoDB**.  Select the `realtime-analytics-MetricDetails` table, then look at the **Overview** tab on the right.  Under **Stream details**, click the button that says **Manage Stream**:
 
-Region| Launch
-------|-----
-US West (Oregon) | [![Launch Module 1 in ](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/images/cloudformation-launch-stack-button.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=realtime-analytics-workshop&templateURL=https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-start.yaml)
-US West (N. Virginia) | [![Launch Module 1 in ](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/images/cloudformation-launch-stack-button.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=realtime-analytics-workshop&templateURL=https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-start.yaml)
+![Create Stream](../images/module-3-createstream1.png)
 
-2.	Click **Next** on the Select Template page.
-3.	**(Optional)** If you'd like to login to the web servers, select an **SSH Keypair** for this region, select True next to **Enable SSH**, and enter a CIDR block such as `0.0.0.0/0` next to **Enable SSH From**. If you don't have a key pair already created, see ([Creating a key pair using amazon EC2](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair))
+2.  Select **New image** under **View type**, then click the **Enable** button:
 
-![Configuring SSH access](../images/module-1-ssh.png)
+![Enable Stream](../images/module-3-createstream2.png)
 
-![Configuring CloudFormation Stack](../images/module-1-next.png)
+3. If everything worked successfully, you should see a value next to **Latest stream ARN** in **Stream details**.
 
-4.	Click **Next**.
-5.	Click **Next** Again. (skipping IAM advanced section)
-6.	On the Review page, check the box to acknowledge that CloudFormation will create IAM resources and click **Create**.
+![Stream ARN](../images/module-3-createstream3.png)
 
-![iam-accept](../images/iam-accept.png)
+</details>
 
-7. While you wait for the CloudFormation stack to be created, download the CloudFormation template by right-clicking here and selecting **Save Link As...**: ([Module 1 Starting Template](https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-start.yaml))
-8. Open the template you just downloaded in a text editor.  If you don't have a text editor, you can download a trial of Sublime Text here: ([Sublime Text](https://www.sublimetext.com))
+## 2. Create an IAM role and policy for DynamoDB Streams, Lambda, and CloudWatch
 
-When you see the stack showing a **CREATE_COMPLETE** status, you are ready to move on to the next step.
+Next, we need to create an IAM role and policy that will be used by the Lambda function, and will enable the DynamoDB Stream to invoke the Lambda function, and will allow the Lambda function to publish metric data to CloudWatch.
+
+<details>
+<summary><strong>IAM role and policy creation (expand for details)</strong></summary><p>
+
+1.  Open the AWS console, and navigate to **Services**, **IAM**.
+2.  Click on **Roles** on the left column, the click the **Create role** button.
+3.  On the **Create role** screen, select **AWS service**, then choose the **Lambda** service, and click the button labeled **Next: Permission**:
+
+![Create role 1](../images/module-3-iam1.png)
+
+4.  On the next screen, click the **Create policy** button, which will open the IAM policy editor in a new tab:
+
+![Create role 2](../images/module-3-iam2.png)
+
+5.  On the **Create policy** screen, select the **JSON** tab at the top, then select all text and clear the editor window:
+
+![Create role 3](../images/module-3-iam3.png)
+
+6.  Edit the following policy in a text editor, replacing `<Region>` with the AWS region name you are deploying to, such as `us-west-2`.  Next, replace `<Account ID>` with your 12-digit AWS account ID.  This account ID can be found by clicking your AWS username in the top right of the console:
+
+```JSON
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "lambda:InvokeFunction",
+            "Resource": "arn:aws:lambda:<Region>:<Account ID>:function:pushMetrics*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:<Region>:<Account ID>:*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:ListStreams"
+            ],
+            "Resource": "arn:aws:dynamodb:<Region>:<Account ID>:table/realtime-analytics-MetricDetails/stream/*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "cloudwatch:PutMetricData"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
+```
+
+7.  Verify the Policy Summary looks correct on the **Review policy** screen.  Give the policy a name like `DynamoDB-Streams-Lambda-CloudWatch` or similar, then click the **Create policy** button:
+
+![Create role 4](../images/module-3-iam4.png)
+
+8.  Switch back to the **Create role** tab of your browser, and select the policy you just created by checking the box next to it.  Click **Next: Review**.  **Note:** you might need to click the Refresh button that looks like a pair of circular arrows on the top right of this screen in order to see the policy you just created:
+
+![Create role 5](../images/module-3-iam5.png)
+
+9.  Finally, give the role a name like `DDB-Streams-Lambda-Role` and click the **Create role** button:
+
+![Create role 6](../images/module-3-iam6.png)
+
+10.  You should see confirmation that the role has been created:
+
+![Create role 7](../images/module-3-iam7.png)
 
 </p></details>
 
-## 2. Add the Kinesis Resources to the CloudFormation Template 
+## 3. Create the PushMetrics Lambda Function
 
-During this step, you will create an S3 analytics bucket resource, as well as a Kinesis Firehose Delivery Stream that will deliver events to it.  You'll also need to configure an IAM role that gives the Kinesis Delivery Stream permission to deliver events to the S3 analytics bucket.
-
-<details>
-<summary><strong>Edit the CloudFormation template (expand for details)</strong></summary><p>
-
-1.	Open the CloudFormation template you downloaded in the previous step in an editor.  
-2.	At the bottom of the **Resources** section, directly above the **Outputs** section, add the resource for the analytics S3 bucket that will receive messages delivered by the Kinesis Delivery Stream:  
+In this step, we'll create the Lambda function that publishes CloudWatch metrics data from the DynamoDB Stream.
 
 <details>
-<summary><strong>AnalyticsBucket Resource (expand for code)</strong></summary>
+<summary><strong>Lambda Function creation (expand for details)</strong></summary><p>
 
-```YAML
-# Kinesis Application
-  AnalyticsBucket:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
+1.  Open the AWS console, then navigate to **Services**, **Lambda**, and click the **Create function** button in the top right of the console.
+2.  On the **Create function** screen, **Author from scratch** should already be selected, if not select it, and give your function the name `pushMetrics` (this must match the function name in the IAM policy you just created).  Select `Python 2.7` in the **Runtime** field, then select `Choose an existing role` from the drop-down menu under **Role**.  Finally, choose the role you just created from the drop-down menu under **Existing role**, and click the **Create function** button:
+
+![Create Lambda function 1](../images/module-3-lambda1.png)
+
+3.  Now, on the Lambda function screen in the console, you'll need to click on **DynamoDB** in the **Designer** underneath **Add triggers**:
+
+![Create Lambda function 2](../images/module-3-lambda2.png)
+
+4.  You'll notice that the DynamoDB trigger we just added says "Configuration required" in an informational bubble.  Scroll down to the **Configure triggers** section and select `realtime-analytics-MetricDetails` as the **DynamoDB table**.  Enter `300` for **Batch size**, and select `Trim Horizon` under **Starting Position**.  Click the **Add** button.
+
+![Create Lambda function 3](../images/module-3-lambda3.png)
+
+5.  Now, scroll down to the **Function code** section, and make sure that `Edit code inline` is selected from the **Code entry type** drop-down menu.  Copy and paste the following Python code into the inline code editing window:
+
+<details>
+<summary><strong>Lambda Function Code (expand for code)</strong></summary><p>
+
+```Python
+#############################################################################
+## cwmetricstream.py - A Lambda function that reads from a DynamoDB stream ##
+## and pushes CloudWatch metrics to different event count namespaces.      ##
+## Created by Luke Youngblood - lukey@amazon.com                           ##
+## ----------------------------------------------------------------------- ##
+## Set the following environment variables:                                ##
+## REGION = the AWS region you would like to put CloudWatch metric data to ##
+## AGENT_NAMESPACE = CloudWatch metric namespace for agent count events    ##
+## EVENT_NAMESPACE = CloudWatch metric namespace for standard event counts ##
+## REFERRAL_NAMESPACE = CloudWatch metric namespace for referral counts    ##
+## PAGEVIEW_NAMESPACE = CloudWatch metric namespace for pageview counts    ##
+## ANOMALY_NAMESPACE = CloudWatch metric namespace for anomaly scores      ##
+############################################################################# 
+
+import json
+import boto3
+from os import environ
+from datetime import datetime
+from collections import defaultdict
+
+def put_cloudwatch_metric(event_name, event_datetime, event_count=1, cwc=boto3.client('cloudwatch', region_name=environ['REGION'])):
+    event_name_list = event_name.split(':')
+    if event_name_list[0] == 'agent_count':
+        namespace=environ['AGENT_NAMESPACE']
+        metricname=event_name_list[1]
+    elif event_name_list[0] == 'event_count':
+        namespace=environ['EVENT_NAMESPACE']
+        metricname=event_name_list[1]
+    elif event_name_list[0] == 'referral_count':
+        namespace=environ['REFERRAL_NAMESPACE']
+        metricname=event_name_list[1]
+    elif event_name_list[0] == 'top_pages':
+        namespace=environ['PAGEVIEW_NAMESPACE']
+        metricname=event_name_list[1]
+    elif event_name_list[0] == 'event_anomaly':
+        namespace=environ['ANOMALY_NAMESPACE']
+        metricname=event_name_list[1]
+    elif event_name_list[0] == 'visitor_count':
+        namespace=environ['EVENT_NAMESPACE'] # visitor_count goes in the standard event count namespace
+        metricname=event_name_list[0] # This metric type simply has 'visitor_count' as the metric name
+    metricData=[{
+            'MetricName': metricname,
+            'Timestamp': datetime.strptime(event_datetime, '%Y-%m-%dT%H:%M:%S'),
+            'Value': event_count,
+            'Unit': 'Count',
+            'StorageResolution': 1
+        },]
+    response = cwc.put_metric_data(Namespace=namespace,MetricData=metricData)
+
+def lambda_handler(event, context):
+    events_int = defaultdict(int)
+    events_float = defaultdict(float)
+    for record in event['Records']:
+        for metric in record['dynamodb']['NewImage']['MetricDetails']['L']:
+            try: event_timestamp = metric['M']['EVENTTIMESTAMP']['N']
+            except Exception as e:
+                event_timestamp='NULL'
+
+            if event_timestamp!='NULL':
+                timestamp = float(event_timestamp) / 1000
+                event_time = datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%dT%H:%M:%S')
+
+            metric_field = metric['M']['METRICTYPE']['S']
+            if metric_field=='agent_count' or metric_field=='event_count' or metric_field=='referral_count' or metric_field=='top_pages':
+                if metric['M']['METRICITEM']['S'] == 'null':
+                    event_type = metric_field + ':No referrer' # split on : later
+                else:
+                    event_type = metric_field + ':' + metric['M']['METRICITEM']['S'] # split on : later
+                event_value = metric['M']['UNITVALUEINT']['N'] # these metric types all have int values
+                events_int[(event_type, event_time)] = int(event_value)
+            elif metric_field == 'event_anomaly': # anomalies need to be split on :
+                print "Anomaly detected!"
+                event_type_list = metric['M']['METRICITEM']['S'].split(':')
+                event_type = metric_field + ':' + event_type_list[0] # split on : later
+                event_value = metric['M']['UNITVALUEFLOAT']['N'] # anomalies events have float values
+                events_float[(event_type, event_time)] = float(event_value)
+            elif metric_field == 'visitor_count':
+                event_type = metric_field
+                event_value = metric['M']['UNITVALUEINT']['N'] # visitor count events have int values
+                events_int[(event_type, event_time)] = int(event_value)
+            else: event_type = 'NULL'
+      
+            if event_type!='NULL' and event_timestamp!='NULL':
+                if 'NULL' in metric['M']['UNITVALUEFLOAT']:
+                    events_int[(event_type, event_time)] = int(event_value)
+                else:
+                    events_float[(event_type, event_time)] = float(event_value)
+
+    for key,val in events_int.iteritems():
+        print "%s, %s = %d" % (key[0], key[1], val)
+        put_cloudwatch_metric(key[0], key[1], int(val))
+    for key,val in events_float.iteritems():
+        print "%s, %s = %f" % (key[0], key[1], val)
+        put_cloudwatch_metric(key[0], key[1], float(val))
+    return 'Successfully processed {} records.'.format(len(event['Records']))
 ```
+</p></details>
 
-</details>
+6.  After pasting the code, your inline editor should look like this:
 
-3.	Add the IAM Role and Policy that will give the Kinesis Delivery Stream permissions to deliver the events directly below the S3 bucket resource:  
+![Create Lambda function 4](../images/module-3-lambda4.png)
 
-<details>
-<summary><strong>DeliveryStreamRole Resource (expand for code)</strong></summary>
+7.  Next, scroll down to the **Environment variables** section, and enter the following environment variables:
+  * `AGENT_NAMESPACE` should be `EventAgents`
+  * `ANOMALY_NAMESPACE` should be `EventAnomalies`
+  * `EVENT_NAMESPACE` should be `EventCounts`
+  * `PAGEVIEW_NAMESPACE` should be `PageviewCounts`
+  * `REFERRAL_NAMESPACE` should be `ReferralCounts`
+  * `REGION` should be the region you're deploying in, either `us-west-2` or `us-east-1`
 
-```YAML
-  DeliveryStreamRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - firehose.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      Policies:
-        - PolicyName: s3Access
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Sid: ''
-                Effect: Allow
-                Action:
-                  - s3:AbortMultipartUpload
-                  - s3:GetBucketLocation
-                  - s3:GetObject
-                  - s3:ListBucket
-                  - s3:ListBucketMultipartUploads
-                  - s3:PutObject
-                Resource:
-                  - !Sub '${AnalyticsBucket.Arn}'
-                  - !Sub '${AnalyticsBucket.Arn}/*'
-              - Sid: ''
-                Effect: Allow
-                Action:
-                  - logs:PutLogEvents
-                Resource:
-                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/*:log-stream:*'
-```
-Note: We are following the _principle of least privilege_ by enabling resource-level permissions and referencing the `AnalyticsBucket` as `!Sub '${AnalyticsBucket.Arn}'`
+![Create Lambda function 5](../images/module-3-lambda5.png)
 
-</details>
+8.  Next, scroll down to the **Basic settings** section, and set **Timeout** to `5` minutes, and leave **Memory** set at `128MB`:
 
-4. Next, add the Kinesis Delivery Stream resource directly below the IAM Role:  
+![Create Lambda function 6](../images/module-3-lambda6.png)
 
-<details>
-<summary><strong>DeliveryStream Resource (expand for code)</strong></summary>
-
-```YAML
-  DeliveryStream:
-    Type: AWS::KinesisFirehose::DeliveryStream
-    Properties:
-      DeliveryStreamType: DirectPut
-      S3DestinationConfiguration:
-        BucketARN: !Sub '${AnalyticsBucket.Arn}'
-        BufferingHints:
-          IntervalInSeconds: '60'
-          SizeInMBs: '1'
-        CompressionFormat: UNCOMPRESSED
-        RoleARN: !GetAtt 'DeliveryStreamRole.Arn'
-```
-Note: By setting `IntervalInSeconds` to `60` and `SizeInMBs` to `1`, we are configuring the Kinesis Delivery Stream to deliver events to the S3 bucket whenever either 60 seconds has elapsed, or more than 1MB of event data is in the stream.  Whenever either of these conditions is met, the events will be delivered.
-
-</details>
+9.  Finally, scroll back up to the top of the Lambda function configuration screen, and click the **Save** button in the top right.
 
 </p></details>
 
-## 3. Configure the Kinesis Agent on the AutoScaling Group of Web Servers
+## 4. Visualizing Metrics with CloudWatch
 
-Every AutoScaling Group has a Launch Configuration that is used to configure the EC2 instances when they are launched.  During this next step, you'll modify the existing Launch Configuration in the CloudFormation template, configuring the Kinesis agent to install, start automatically on boot, and stream Apache log events to the Kinesis Delivery Stream that we created in the previous section.  You'll also need to modify the EC2 instance IAM role to give the EC2 instances permission to send events to the Kinesis Delivery Stream.
-
-<details>
-<summary><strong>Edit the CloudFormation template (expand for details)</strong></summary><p>
-
-1.	In the CloudFormation template that you're editing from the previous step, go to line 333, which is where the `AutoScalingGroupLaunchConfig` resource definition begins.  
-
-2.  In the `Metadata` section, under `AWS::CloudFormation::Init`, `config`, `packages`, and `yum`, add a line that contains `aws-kinesis-agent: []` (be sure to use the same indentation as the line with `httpd: []`)
-<details>
-<summary><strong>See this edit in context (expand for code)</strong></summary>
-
-```YAML
-<line 332>
-  AutoScalingGroupLaunchConfig:
-    Type: AWS::AutoScaling::LaunchConfiguration
-    Metadata:
-      AWS::CloudFormation::Init:
-        config:
-          packages:
-            yum:
-              httpd: []
-              aws-kinesis-agent: []
-          files:
-<line 343>
-```
-
-</details>
-
-3.  In the `files` section of the same resource, directly underneath `packages`, add the file `/etc/aws-kinesis/agent.json` with the following configuration:
-
-<details>
-<summary><strong>See this edit in context (expand for code)</strong></summary>
-
-```YAML
-<line 337>
-          packages:
-            yum:
-              httpd: []
-              aws-kinesis-agent: []
-          files:
-            /etc/aws-kinesis/agent.json:
-              content: !Sub |
-                { "cloudwatch.emitMetrics": false,
-                 "maxBufferAgeMillis":"1000",
-                 "firehose.endpoint": "https://firehose.${AWS::Region}.amazonaws.com",
-                 "flows": [
-                   {
-                     "filePattern": "/var/log/httpd/access_log*",
-                     "deliveryStream": "${DeliveryStream}",
-                     "partitionKeyOption": "RANDOM",
-                     "dataProcessingOptions": [
-                     {
-                          "optionName": "LOGTOJSON",
-                          "logFormat":"COMBINEDAPACHELOG",
-                          "matchPattern": "^([\\d.]+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(.+?)\" (\\d{3}) ([0-9]+) \"(.+?)\" \"(.+?)\" \"(.+?)\" \"(.+?)\" \"(.+?)\"$",
-                          "customFieldNames": ["host", "ident", "authuser", "datetime", "request", "response", "bytes", "referrer", "agent", "event", "clientid", "page"]
-                     }
-                     ]
-                   }
-                 ]
-                }
-            /var/www/html/index.html:
-<line 365>
-```
-</details>
-
-4.  In the `commands` section of the same resource, after line number 390, add the following two commands, which will execute `chkconfig` to add the `aws-kinesis-agent` to `/etc/init.d` and enable it by symlinking it into the appropriate `/etc/rcX.d` directories so that it will launch on startup:
-
-<details>
-<summary><strong>See this edit in context (expand for code)</strong></summary>
-
-```YAML
-<line 390>
-            ad-add-service-aws-kinesis-agent:
-              command: chkconfig --add aws-kinesis-agent
-            ae-add-service-startup-aws-kinesis-agent:
-              command: chkconfig aws-kinesis-agent on
-<line 395>
-```
-</details>
-
-5.  Next, also in the `commands` section of the same resource, after line number 408, add the following command, which will modify the Apache log format to include a data header:
-
-<details>
-<summary><strong>See this edit in context (expand for code)</strong></summary>
-
-```YAML
-<line 408>
-            ca-add-data-header:
-              command: sed -i 's/LogFormat "%h %l %u %t \\"%r\\" %>s %b \\"%{Referer}i\\"
-                \\"%{User-Agent}i\\"" combined/LogFormat "%h %l %u %t \\"%r\\" %>s
-                %b \\"%{Referer}i\\" \\"%{User-Agent}i\\" \\"%{event}i\\" \\"%{clientid}i\\"
-                \\"%{page}i\\"" combined/' /etc/httpd/conf/httpd.conf
-<line 415>
-```
-</details>
-
-6.  Next, we need to add the `aws-kinesis-agent` to the `services` section of the same resource, directly after line number 420.  This will ensure that the service is running:
-
-<details>
-<summary><strong>See this edit in context (expand for code)</strong></summary>
-
-```YAML
-<line 420>
-              aws-kinesis-agent:
-                enabled: 'true'
-                ensureRunning: 'true'
-                files:
-                  - /etc/init.d/aws-kinesis-agent
-<line 426>
-```
-</details>
-
-7.  Next, we need to add a new IAM policy to the `WebServerKinesisRole` resource, which will give it permission to put event records on the Kinesis Delivery Stream.  Go to line 548 in the CloudFormation template, where the `Policies:` section begins and add the following policy statement:
-
-<details>
-<summary><strong>See this edit in context (expand for code)</strong></summary>
-
-```YAML
-<line 547>
-      Policies:
-        - PolicyName: puttofirehose
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - firehose:PutRecord
-                  - firehose:PutRecordBatch
-                Resource:
-                  - !GetAtt 'DeliveryStream.Arn'
-        - PolicyName: ssmagent
-<line 560>
-```
-Note: again, we are using resource-based permissions to implement the security best practice of least privileges, by referring to `!GetAtt 'DeliveryStream.Arn'`
-
-</details>
-
-8.  Finishing the CloudFormation edits, we need to make a small edit to the `UserData` section of our Launch Configuration so that AutoScaling will trigger a rolling upgrade of the web servers in our AutoScaling group, replacing them with new EC2 instances that are running the Kinesis agent.  The previous cfn-init edits we made to the Launch Configuration won't automatically trigger replacement of our EC2 instances without this.  Add `echo updated` after line 436:
-
-<details>
-<summary><strong>See this edit in context (expand for code)</strong></summary>
-
-```YAML
-<line 433>
-      UserData: !Base64
-        Fn::Sub: |
-          #!/bin/bash -xe
-          echo updated
-          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource AutoScalingGroupLaunchConfig --region ${AWS::Region}
-          /opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource AutoScalingGroup
-      BlockDeviceMappings:
-<line 441>
-```
-Note: You could also simply terminate the EC2 instances manually after updating the CloudFormation stack, however, that would be more disruptive to web traffic than allowing AutoScaling to perform the update according to the Update Policy included in the AutoScaling Group resource.
-
-</details>
-</p></details>
-
-## 4. Update CloudFormation Stack with New and Changed Resources
-
-Now, we'll need to update the existing CloudFormation stack, which will add the new Kinesis resources, as well as update the existing resources with our changes.
-
-<details>
-<summary><strong>CloudFormation Update Instructions (expand for details)</strong></summary><p>
-
-1.	Navigate in the AWS Console to **Services**, **CloudFormation**, and select the stack titled `realtime-analytics-workshop`, then select **Actions**, **Update Stack**:
-
-![Updating CloudFormation Stack](../images/module-1-updatestack1.png)
-
-2.	Select the **Upload a template to Amazon S3** radio button, then click the **Choose File** button, and select the CloudFormation template you edit in the previous section:
-
-![Updating CloudFormation Stack](../images/module-1-updatestack2.png)
-
-3.	On the **Parameters** page, you can leave all fields unmodified, and click **Next**.
-4.	Click **Next** Again. (skipping IAM advanced section)
-5.	On the Review page, take a moment to review the changes that will be made to your existing CloudFormation stack.  This is an important step to ensure that you are modifying the resources in a way that you expect, and that there are no unintended changes being introduced to your CloudFormation stack.  The resource change set should look like this:
-
-![CloudFormation Change Set](../images/module-1-updatestack3.png)
-
-6.  Check the box to acknowledge that CloudFormation will create IAM resources and click **Update**.
-
-![iam-accept](../images/iam-accept.png)
-
-7. While you wait for the CloudFormation stack to be updated, review the events and watch how AutoScaling performs the rolling upgrade of your existing web servers according to the Update Policy. 
-8. If you run into any problems during the stack update that triggers an update rollback, you can either troubleshoot errors by looking in the **Events** section of the CloudFormation console, or you can download a working version of the finished CloudFormation template here:  ([Module 1 Final Template](https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-finish.yaml))
-
-When you see the stack showing a **UPDATE_COMPLETE** status, you are ready to move on to the next step.
-
-</p></details>
-
-## 5. Verify that the Kinesis Firehose Delivery Stream is Delivering Events to S3
-
-To confirm that everything is setup properly, we can verify that events are being delivered from the web servers to the S3 analytics bucket by the Kinesis Firehose Delivery Stream.
-
-<details>
-<summary><strong>Kinesis Firehose Delivery Stream verification (expand for details)</strong></summary><p>
-
-1.	Navigate in the AWS console to **Services**, then **S3**.
-2.  Find the analytics bucket.  If you used the default stack name, it will be called `realtime-analytics-workshop-analyticsbucket-...` (with a random string at the end).  Click on the bucket to navigate into the object structure.  It should look something like this (with the current year as the only top-level folder):
-
-![S3 Bucket](../images/module-1-verifys3.png)
-
-3.  Navigate all the way down into the folder structure (it is organized by year, month, day, hour, etc.) until you see individual objects that are collections of events that were delivered by the Kinesis Firehose Delivery Stream:
-
-![S3 Bucket](../images/module-1-verifys32.png)
-
-If you see folders and objects inside the folders that were delivered by the Kinesis Firehose Delivery Stream, everything is working correctly, and you can proceed to the next module.
-
-</p></details>
+To be continued...
 
 ### Start next module
 
-Module 2: [Performing Realtime Analytics with Kinesis Analytics](../module-2/README.md)
+Module 4: [Adding Custom Metrics and Extending the Solution](../module-4/README.md)
 
 ## License
 
