@@ -1,7 +1,7 @@
-# Adding Custom Metrics and Extending the Soltion
+# Adding Custom Metrics and Extending the Solution
 ## Introduction
 
-In this module you will customize the solution to accept another metric not currenly captured.  Is there a specific metric you would like to capture from your web site that isn't already included in the metrics displayed?  We'll show you how this solution can be easily extended to capture and display new metrics.
+In this module you will customize the solution to accept another metric not currently captured.  Is there a specific metric you would like to capture from your web site that isn't already included in the metrics displayed?  We'll show you how this solution can be easily extended to capture and display new metrics.
 
 ##  Add a Custom Metric
 
@@ -48,7 +48,7 @@ This code is just an example of what would be added to your measured website.  F
 <summary><strong>Add the Metric to the DynamoDB Table (expand for details)</strong></summary><p>    
 
 The Lambda processing function reads from the DynamoDB Metric table to determine how to process metrics that are persisted to the MetricDetails table.  In this example you will add a metric that captures the average load time for all captured pages on the target website.  
-The DynamoDB table named **stack-name**-Metrics iniatally contains seven items representing different metrics.  Each item contains the following information is required for each metric type:
+The DynamoDB table named **stack-name**-Metrics initially contains seven items representing different metrics.  Each item contains the following information is required for each metric type:
 *   **MetricType** - a primary partition key to identity the metric
 *   **AmendmentStrategy** - this is a field to indicate how to late arriving records for an existing event time. Valid values are [add | replace | replace_existing].  **add** combines the values of the existing item and the new item, **replace** replaces the metric in DynamoDB with the newly arrived item, **replace_existing** only replaces the matching metrics in the set of metrics in the item.  
 *   **IsSet** - indicates if the detail item contains one or more metric items [true | false]. 
@@ -71,8 +71,8 @@ The DynamoDB table named **stack-name**-Metrics iniatally contains seven items r
 8.  Click **Save** to create the new item.
 
 Note:
-*   We are using the replace Amednment strategy which means that if a subsequent average comes in for the same event time window which has already been received, the new value will be used. 
-*   We are using a single value for all cases for each time window indicatedd by IsSet: false.  If we wanted to break out additional data such as browser type, page, etc. we could instead use a set with different SQL in the Kinesis application.
+*   We are using the replace amendment strategy which means that if a subsequent average comes in for the same event time window which has already been received, the new value will be used. 
+*   We are using a single value for all cases for each time window indicated by IsSet: false.  If we wanted to break out additional data such as browser type, page, etc. we could instead use a set with different SQL in the Kinesis application.
 *   We are using IsWholeNumber: true since the metric value we will be using is the average number of milliseconds in whole milliseconds.  
 the custom metric header name (**page_load_time**) you defined in step 1 is not  
 *   The metric type **avg_pg_ld** is differnt than the custom_metric_name **page_load_time** which is what gets sent into the beacon servers.  The SQL in the Kinesis application uses the page load time values to calculate the average page load times over a one minute window.    
@@ -81,7 +81,7 @@ the custom metric header name (**page_load_time**) you defined in step 1 is not
 <details>
 <summary><strong>Simulate Load Times via Python Script (expand for details)</strong></summary><p>  
 
-To simulate page load times you will create a Python script simialr to the **test-beacon.py** script you used earlier.  
+To simulate page load times you will create a Python script similar to the **test-beacon.py** script you used earlier.  
 Open a text editor and add the following:  
 
 ```python
@@ -173,10 +173,10 @@ SELECT
 
 ### Next Steps
 
-If you have made it to this point in the Workshop you are a realtime analytics ninja, unicorn, or both.  Congratulations! Here are some useful next steps to even more value out of the solution.  
+If you have made it to this point in the Workshop you are a real time analytics ninja, unicorn, or both.  Congratulations! Here are some useful next steps to even more value out of the solution.  
 *   Create a Glue Crawler pointing it to the S3 bucket being populated by the Kinesis Firehose delivery stream.  Run the crawler and create a table with partitions in the Glue Data Catalog.  Select the table in AWS Glue and select **Action** then **View data** to run queries on the data in S3 using Athena.  You can also now query this data from within EMR or Redshift Spectrum using the external table created in the Glue Data Catalog.
-*   Update the average page load time metric to also inclue the page where the load time was generated. You will change the IsSet in the Metrics table to true.  Also change the SQL to select the page name for MetricItem instead of using 'All Pages'.
-*   Create a notification email when the event_anomaly score exceeds a threshold of 2.0.  Create a new **stream** in SQL that will contain the amonaly records.  Copy the existing ANOMALY_EVENT_PUMP statment and add it back with a new name.  Change the stream that is being inserted into to the anomaly stream just created.  Add a WHERE clause to only emit events that are sufficently anomalous **WHERE AnomalyScore > 2.0**.  Create a Lambda function that sends an SNS message to a topic that is subscribed to by SES. Create a new destination in your Kinesis application for your anomaly stream and connect it to the Lambda function.  
+*   Update the average page load time metric to also include the page where the load time was generated. You will change the IsSet in the Metrics table to true.  Also change the SQL to select the page name for MetricItem instead of using 'All Pages'.
+*   Create a notification email when the event_anomaly score exceeds a threshold of 2.0.  Create a new **stream** in SQL that will contain the anomaly records.  Copy the existing ANOMALY_EVENT_PUMP statement tatment and add it back with a new name.  Change the stream that is being inserted into to the anomaly stream just created.  Add a WHERE clause to only emit events that are sufficiently anomalous **WHERE AnomalyScore > 2.0**.  Create a Lambda function that sends an SNS message to a topic that is subscribed to by SES. Create a new destination in your Kinesis application for your anomaly stream and connect it to the Lambda function.  
 
 
 ## License
