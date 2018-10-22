@@ -13,7 +13,7 @@ In this module, you will use the CloudFormation template to update your solution
 If you have already completed module #1, you can update the existing stack with the starting point for module #2 following steps in 1.A.  Otherwise if you skipped the first module, you can create a new stack with the starting point for module #2 by following the instructions in 1.B. 
 
 <details>
-<summary><strong>1.A CloudFormation Update Stack Instructions (expand for details)</strong></summary><p>
+<summary><strong>1.A Update CloudFormation Stack from Module #1 (expand for details)</strong></summary><p>
 
 1.	Navigate to the CloudFormation serviice in the AWS Console.
 2.  Check the box for the stack you created in module #1.
@@ -38,12 +38,15 @@ If you have already completed module #1, you can update the existing stack with 
 
 </p></details>
 
-<p>
-Skip 1.B the if you have completed 1.A.
-</p>
+<p>  
+
+Skip 1.B the if you have completed 1.A.  
+
+</p>  
+
 
 <details>
-<summary><strong>1.B Alternative: If you skipped Module 1 you can start with Module 2 (expand for details)</strong></summary><p>
+<summary><strong>1.B Alternative: If you skipped Module #1 you can start with Module #2 (expand for details)</strong></summary><p>
 
 If you already deployed a stack from Module 1, **skip this section**.
 Otherwise, you can start by launching the Module 2 starting template.  
@@ -73,9 +76,9 @@ US West (N. Virginia) | [![Launch Module 2 in ](http://docs.aws.amazon.com/AWSCl
 
 When you see the stack showing a **CREATE_COMPLETE** status, you are ready to move on to the next step.
 
-</p></details>
+</p></details>  
 
-Your stack will take a few minutes to deploy.  When the status for the stack changes to UPDATE_COMPLETE or CREATE_COMPLETE you can proceed to the next section. 
+Your stack will take a few minutes to deploy.  When the status for the stack changes to UPDATE_COMPLETE or CREATE_COMPLETE you can proceed to the next section.  
 
 ## 2. Generating Random Web Traffic for Processing
 
@@ -160,11 +163,11 @@ CREATE STREAM "DESTINATION_SQL_STREAM"(
 
 ![Select Lambda](../images/2-select-lambda.png)
 
-13. Select Choose an existing in-application stream, select the DESTINATION_SQL_STREAM that you just created, and select JSON for the Output format.
+5. Select Choose an existing in-application stream, select the DESTINATION_SQL_STREAM that you just created, and select JSON for the Output format.
 
 ![Select output](../images/2-select-stream.png)
 
-14. Re-Select the role named <strong>stack-name</strong>KinesisAnalyticsRole to enable the Save and continue button the click the button.
+6. Re-Select the role named <strong>stack-name</strong>KinesisAnalyticsRole to enable the Save and continue button the click the button.
 
 ![Select role](../images/2-select-role.png)
 
