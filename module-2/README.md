@@ -125,7 +125,7 @@ In this step we are going to manually add the SQL and destination stream in Kine
 2.  Locate the Kinesis analytics applications list you created through CloudFormation which will be prepended with your stack name.  By default it will be named realtime-analytics-workshop-WebMetricsApplication.
 3.  Click the application name to display the details for the application.
 4.  Notice that the source is the Firehose delivery stream created earlier.
-5.  Click on the Go to SQL editor button to open the editor.
+5.  Click on the **Go to SQL editor** button to open the editor.
 
 ![Click SQL Editor](../images/2-SQL-editor.png)
 
@@ -133,12 +133,14 @@ In this step we are going to manually add the SQL and destination stream in Kine
 
 ![Click Start Application](../images/2-start-application.png)
 
-7.  In the SQL Editor we will be creating a new stream to collect the output of the other streams and be used as the single output stream for the application. The stream will be named DESTINATION_SQL_STREAM and contain the following columns:
+7.  In the SQL editor you will be creating a new stream to collect the output of the other streams and it be used as the output stream for the application. The stream will be named DESTINATION_SQL_STREAM and contain the following columns:
     *   MetricType VARCHAR(16),
     *   EventTimestamp BIGINT,
     *   MetricItem VARCHAR(1024),
     *   UnitValueInt BIGINT,
     *   UnitValueFloat DOUBLE 
+
+</details>
 
 <details>
 <summary><strong>Create In-Application Destination Stream (expand for code)</strong></summary>
@@ -157,7 +159,7 @@ CREATE STREAM "DESTINATION_SQL_STREAM"(
 </details>
 
 <details>
-<summary><strong>Configure the Application Output (expamd for details) </strong></summary><p>
+<summary><strong>Configure the Application Output (expand for details) </strong></summary><p>
 
 1.  After several seconds the analytics application will start processing the incoming data.  Select the DESTINATION_SQL_STREAM on the Real-time analytics tab and notice data records flowing through.  
 2. Click the Close link below the data table to return to the Kinesis application pipeline components.  
