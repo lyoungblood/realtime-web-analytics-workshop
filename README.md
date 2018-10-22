@@ -26,11 +26,25 @@ Lorem ipsum...
 
 [Get started on module 2](module-2/README.md)
 
-## Module 3 - Adding Custom Metrics and Extending the Solution
+## Module 3 - Visualizing Metrics using CloudWatch Dashboards
+
+In this module, which builds on our previous modules, you will start with realtime metric data that is being inserted into a DynamoDB table by our Kinesis Data Analytics application:
+
+![Module 3 Starting Architecture](images/module-3-start.png)
+
+You'll learn how to capture the table activity with ([DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html)).  Once the stream has been created, you'll create a Lambda function that subscribes to the DynamoDB stream and processes the data change events, publishing them as ([CloudWatch Metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/working_with_metrics.html)) using ([PutMetricData](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_PutMetricData.html)).  Finally, after the CloudWatch Metrics are published, we'll visualize the data by creating a ([CloudWatch Dashboard](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Dashboards.html)).
+
+![Final Architecture Diagram](images/Realtime-Website-Analytics-Diagram.png)
+
+In this scenario, you will leverage Amazon DynamoDB Streams, AWS Lambda, Amazon CloudWatch Metrics and Dashboards.
+
+[Get started on module 3](module-3/README.md)
+
+## Module 4 - Adding Custom Metrics and Extending the Solution
 
 Lorem ipsum...
 
-[Get started on module 3](module-3/README.md)
+[Get started on module 4](module-4/README.md)
 
 ## License
 
