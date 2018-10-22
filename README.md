@@ -26,7 +26,7 @@ Amazon Kinesis Data Analyitics makes it easy to process streaming data in real t
 
 ![Module 2 Architecture](images/module-2.png)
 
-[Get started on module 2](module-2/README.md)
+[Get Started on Module 2](module-2/README.md)
 
 ## Module 3 - Visualizing Metrics using CloudWatch Dashboards
 
@@ -40,13 +40,13 @@ You'll learn how to capture the table activity with ([DynamoDB Streams](https://
 
 In this scenario, you will leverage Amazon DynamoDB Streams, AWS Lambda, Amazon CloudWatch Metrics and Dashboards.
 
-[Get started on module 3](module-3/README.md)
+[Get Started on Module 3](module-3/README.md)
 
 ## Module 4 - Adding Custom Metrics and Extending the Solution
 
 Lorem ipsum...
 
-[Get started on module 4](module-4/README.md)
+[Get Started on Module 4](module-4/README.md)
 
 ## License
 

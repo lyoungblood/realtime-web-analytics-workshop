@@ -1,4 +1,4 @@
-#  Configure Kinesis Analytics to process clickstream data and add a Lambda function to save processed items in DynamoDB
+#  Configure Kinesis Analytics to Process Clickstream Data
 
 ## Introduction
 
