@@ -39,7 +39,7 @@ If you have already completed module #1, you can update the existing stack with 
 </p></details>
 
 <p>
-Skip the next section if you have just completed 1.A.
+Skip 1.B the if you have completed 1.A.
 </p>
 
 <details>
@@ -146,13 +146,17 @@ CREATE STREAM "DESTINATION_SQL_STREAM"(
     UnitValueInt BIGINT,
     UnitValueFloat DOUBLE);
 ```
-</details>
 
 8.  Click **Save and run SQL**
-9.  After several seconds the analytics application will start processing the incoming data.  Select the DESTINATION_SQL_STREAM on the Real-time analytics tab and notice data records flowing through.  
-10. Click the Close link below the data table to return to the Kinesis application pipeline components.  
-11. Click the **Connect to a destination** button. 
-12. Select AWS Lambda function for the Destination and select the metric processing function created by the module 2 CloudFormation template.  It will be named <strong>stack-name</strong>ProcessMetricsFunction.  Make sure you are **not** selecting the custom helper function.  
+</details>
+
+<details>
+<summary><strong>Configure the Application Output (expamd for details) </strong></summary><p>
+
+1.  After several seconds the analytics application will start processing the incoming data.  Select the DESTINATION_SQL_STREAM on the Real-time analytics tab and notice data records flowing through.  
+2. Click the Close link below the data table to return to the Kinesis application pipeline components.  
+3. Click the **Connect to a destination** button. 
+4. Select AWS Lambda function for the Destination and select the metric processing function created by the module 2 CloudFormation template.  It will be named <strong>stack-name</strong>-ProcessMetricsFunction.  Make sure you are **not** selecting the custom helper function.  
 
 ![Select Lambda](../images/2-select-lambda.png)
 
@@ -164,6 +168,7 @@ CREATE STREAM "DESTINATION_SQL_STREAM"(
 
 ![Select role](../images/2-select-role.png)
 
+</details>
 
 ### Start next module
 
