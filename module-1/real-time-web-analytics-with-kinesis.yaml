@@ -166,8 +166,8 @@ Metadata:
 Mappings:
   SourceCode:
     General:
-      S3Bucket: 'realtime-analytics-workshop-deploy'
-      KeyPrefix: real-time-web-analytics-with-kinesis/latest
+      S3Bucket: 'realtime-analytics-workshop'
+      KeyPrefix: latest
   Sizing:
     50K:
       InstanceType: t2.medium
