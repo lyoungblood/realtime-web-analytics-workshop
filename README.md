@@ -44,7 +44,7 @@ In this scenario, you will leverage Amazon DynamoDB Streams, AWS Lambda, Amazon 
 
 ## Module 4 - Adding Custom Metrics and Extending the Solution
 
-Lorem ipsum...
+In this module you will extend the solution to include a custom metric not already provided by default.   
 
 [Get Started on Module 4](module-4/README.md)
 
