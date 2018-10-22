@@ -178,7 +178,8 @@ CREATE STREAM "DESTINATION_SQL_STREAM"(
 </details>  
 
 <details>
-<summary><strong>Review Completed Steps (expamd for details) </strong></summary><p>
+<summary><strong>Review Completed Steps (expand for details) </strong></summary><p>  
+
 
 You should now have data flowing through the pipeline into the **stack-name**-MetricDetails DynnamoDB table.  
 
@@ -186,7 +187,7 @@ You should now have data flowing through the pipeline into the **stack-name**-Me
 
 </details>  
 
-The template **2-kinesis-analytics-module-completed.yaml** contains the changes that were manually completed in this module.  
+Note: The template **2-kinesis-analytics-module-completed.yaml** contains the changes that were manually completed in this module.  
 
 ### Start next module
 
