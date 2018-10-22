@@ -6,7 +6,7 @@ In this module, you will use the CloudFormation template to update your solution
 
 ## Architecture Overview
 
-![module-1-diagram](../images/module-2.png)
+![module-2-diagram](../images/module-2.png)
 
 ## 1. Deploy Processing Pipeline Components
 
