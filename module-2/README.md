@@ -48,10 +48,12 @@ Skip 1.B the if you have completed 1.A.
 <details>
 <summary><strong>1.B Alternative: If you skipped Module #1 you can start with Module #2 (expand for details)</strong></summary><p>  
 
-<p>
-If you already deployed a stack from Module 1, **skip this section**.
-Otherwise, you can start by launching the Module 2 starting template.  
-</p>
+<p>  
+
+If you sucessfully completed Module 1, **skip this section**. Otherwise, you can start by launching the Module 2 starting template.  
+
+</p>  
+
 
 1.	Right click the **Launch Stack** link below and "open in new tab"
 
@@ -72,9 +74,6 @@ US West (N. Virginia) | [![Launch Module 2 in ](http://docs.aws.amazon.com/AWSCl
 6.	On the Review page, check the box to acknowledge that CloudFormation will create IAM resources and click **Create**.
 
 ![iam-accept](../images/iam-accept.png)
-
-7. While you wait for the CloudFormation stack to be created, download the CloudFormation template by right-clicking here and selecting **Save Link As...**: ([Module 2 Starting Template](https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/2-kinesis-analyytics-module-start.yaml))
-8. Open the template you just downloaded in a text editor.  If you don't have a text editor, you can download a trial of Sublime Text here: ([Sublime Text](https://www.sublimetext.com))
 
 When you see the stack showing a **CREATE_COMPLETE** status, you are ready to move on to the next step.
 
@@ -186,6 +185,8 @@ You should now have data flowing through the pipeline into the **stack-name**-Me
 ![Review Steps Completed](../images/2-complete.png)  
 
 </details>  
+
+The template **2-kinesis-analytics-module-completed.yaml** contains the changes that were manually completed in this module.  
 
 ### Start next module
 
