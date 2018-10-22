@@ -304,11 +304,11 @@ In this step, we'll create a graph from the CloudWatch metrics that are now bein
 
 ![Create CloudWatch Graph 10](../images/module-3-cloudwatch10.png)
 
-Note: In a real-world environment, you would configure the Alarm to take actions, such as sending a message to a Simple Notification Service topic so that you could be alerted when anomalies occur. 
-
 11.  Click the Alarm (bell) icon in the **Actions** column in the row for the **EventAnomalies** metric.  On the **Create Alarm** screen, type in a name, such as `Click event anomaly detected`.  In the **Whenever** section, set it to `Whenever: click is >= 2` (as shown below), and click the **Delete** link in the top-right corner of the default action in the **Actions** section to remove it.  The **Create Alarm** screen should look like this:
 
 ![Create CloudWatch Graph 11](../images/module-3-cloudwatch11.png)
+
+Note: In a real-world environment, you would configure the Alarm to take actions, such as sending a message to a Simple Notification Service topic so that you could be alerted when anomalies occur. 
 
 12.  Click the **Create Alarm** button.
 
