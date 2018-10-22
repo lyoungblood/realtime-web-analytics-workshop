@@ -818,7 +818,6 @@ Resources:
                     UnitValueInt,
                     AnomalyScore
                 FROM "ANOMALY_TEMP_STREAM"
-                WHERE AnomalyScore > 2.0
             );
 
             --agents
