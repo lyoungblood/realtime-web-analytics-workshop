@@ -259,7 +259,62 @@ def lambda_handler(event, context):
 
 ## 4. Visualizing Metrics with CloudWatch
 
-To be continued...
+In this step, we'll create a graph from the CloudWatch metrics that are now being published from DynamoDB Streams by our Lambda function.
+
+<details>
+<summary><strong>CloudWatch graph creation (expand for details)</strong></summary><p>
+
+1.  Open the AWS console, then navigate to **Services**, **CloudWatch**, and click on **Metrics** on the left-hand side of the screen:
+
+![Create CloudWatch Graph 1](../images/module-3-cloudwatch1.png)
+
+2.  In the bottom half of the next screen, make sure the **All metrics** tab is selected, then click on **EventCounts** in the **Custom Namespaces** section:
+
+![Create CloudWatch Graph 2](../images/module-3-cloudwatch2.png)
+
+3.  Click on **Metrics with no dimensions** on the next screen:
+
+![Create CloudWatch Graph 3](../images/module-3-cloudwatch3.png)
+
+4.  Click the checkbox next to the **click** metric:
+
+![Create CloudWatch Graph 4](../images/module-3-cloudwatch4.png)
+
+5.  Now click the word **All** in the navigational window directly underneath the **All metrics** tab, to take you back to the complete list of metric namespaces:
+
+![Create CloudWatch Graph 5](../images/module-3-cloudwatch5.png)
+
+6.  Next, click on the **EventAnomalies** namespace:
+
+![Create CloudWatch Graph 6](../images/module-3-cloudwatch6.png)
+
+7.  Click on **Metrics with no dimensions** on the next screen:
+
+![Create CloudWatch Graph 7](../images/module-3-cloudwatch7.png)
+
+8.  Click the checkbox next to the **click** metric:
+
+![Create CloudWatch Graph 8](../images/module-3-cloudwatch8.png)
+
+9.  Now, click on the **Graphed metrics (2)** tab:
+
+![Create CloudWatch Graph 9](../images/module-3-cloudwatch9.png)
+
+10.  Click the right-arrow underneath the **Y Axis** column in the row for the **EventAnomalies** metric, then click the down-arrow next to the **Period** column, and change the value to *10 seconds*.  When done, your graph should look something like this:
+
+![Create CloudWatch Graph 10](../images/module-3-cloudwatch10.png)
+
+Note: In a real-world environment, you would configure the Alarm to take actions, such as sending a message to a Simple Notification Service topic so that you could be alerted when anomalies occur. 
+
+11.  Click the Alarm (bell) icon in the **Actions** column in the row for the **EventAnomalies** metric.  On the **Create Alarm** screen, type in a name, such as `Click event anomaly detected`.  In the **Whenever** section, set it to `Whenever: click is >= 2` (as shown below), and click the **Delete** link in the top-right corner of the default action in the **Actions** section to remove it.  The **Create Alarm** screen should look like this:
+
+![Create CloudWatch Graph 11](../images/module-3-cloudwatch11.png)
+
+12.  Click the **Create Alarm** button.
+
+13.  Next, click on the **Graph options** tab and scroll down until you see the **Horizontal annotations** section.  Click the **Add horizontal annotation** link, and fill it in as shown in the screenshot below, clicking the right-arrow in the **Axis** column, filling in `2` in the **Value** column, and typing `Anomaly Threshold` in the **Label** column:
+
+![Create CloudWatch Graph 12](../images/module-3-cloudwatch12.png)
 
 ### Start next module
 
