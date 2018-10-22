@@ -46,10 +46,12 @@ Skip 1.B the if you have completed 1.A.
 
 
 <details>
-<summary><strong>1.B Alternative: If you skipped Module #1 you can start with Module #2 (expand for details)</strong></summary><p>
+<summary><strong>1.B Alternative: If you skipped Module #1 you can start with Module #2 (expand for details)</strong></summary><p>  
 
+<p>
 If you already deployed a stack from Module 1, **skip this section**.
 Otherwise, you can start by launching the Module 2 starting template.  
+</p>
 
 1.	Right click the **Launch Stack** link below and "open in new tab"
 
@@ -127,7 +129,7 @@ In this step we are going to manually add the SQL and destination stream in Kine
 
 ![Click SQL Editor](../images/2-SQL-editor.png)
 
-6.  Click Yes, start application to start processing incoming data.
+6.  Click **Yes, start application** to start processing incoming data.
 
 ![Click Start Application](../images/2-start-application.png)
 
@@ -138,6 +140,7 @@ In this step we are going to manually add the SQL and destination stream in Kine
     *   UnitValueInt BIGINT,
     *   UnitValueFloat DOUBLE 
 
+<details>
 <summary><strong>Create In-Application Destination Stream (expand for code)</strong></summary>
 Add the following code to the SQL editor
 
@@ -167,11 +170,20 @@ CREATE STREAM "DESTINATION_SQL_STREAM"(
 
 ![Select output](../images/2-select-stream.png)
 
-6. Re-Select the role named <strong>stack-name</strong>KinesisAnalyticsRole to enable the Save and continue button the click the button.
+6. Re-Select the role named <strong>stack-name</strong>-KinesisAnalyticsRole to enable the Save and continue button the click the button.
 
 ![Select role](../images/2-select-role.png)
 
-</details>
+</details>  
+
+<details>
+<summary><strong>Review Completed Steps (expamd for details) </strong></summary><p>
+
+You should now have data flowing through the pipeline into the **stack-name**-MetricDetails DynnamoDB table.  
+
+![Review Steps Completed](../images/2-complete.png)  
+
+</details>  
 
 ### Start next module
 
