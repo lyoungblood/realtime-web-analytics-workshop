@@ -23,7 +23,7 @@ Here are some examples that you would use on the site you are measuring.
 ```  
 ... 
 ```HTML
-<body>
+    <body>
         <script type="text/javascript">
             $(window).load(function() {
                 var loadTime = Date.now() - pageStart;
