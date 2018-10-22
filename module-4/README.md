@@ -3,9 +3,9 @@
 
 In this module you will customize the solution to accept another metric not currenly captured.  Is there a specific metric you would like to capture from your web site that isn't already included in the metrics displayed?  We'll show you how this solution can be easily extended to capture and display new metrics.
 
-## 1. Add a Custom Metric
+##  Add a Custom Metric
 
-It may be useful to know how long pages on your website take to load. You could track averages, maximums, minimums, compare performance of differnt browsers, etc.  Here, we'll show you how to add a custom metric that captures and processes page load time.  
+It may be useful to know how long pages on your website take to load. You could track averages, maximums, minimums, compare performance of different browsers, etc.  Here, we'll show you how to add a custom metric that calculates the average page load time for all pages measured on your target site.   
 
 <details>
 <summary><strong>Capture Load Time on Target Website (expand for details)</strong></summary><p>
@@ -40,6 +40,8 @@ Here are some examples that you would use on the site you are measuring.
         </script>
     </body>
 ```
+This code is just an example of what would be added to your measured website.  For the workshop we will simulate traffic with a Python script.  
+
 </details>
 
 <details>
@@ -47,11 +49,11 @@ Here are some examples that you would use on the site you are measuring.
 
 The Lambda processing function reads from the DynamoDB Metric table to determine how to process metrics that are persisted to the MetricDetails table.  In this example you will add a metric that captures the average load time for all captured pages on the target website.  
 The DynamoDB table named **stack-name**-Metrics iniatally contains seven items representing different metrics.  Each item contains the following information is required for each metric type:
-*   MetricType - a primary partition key to identity the metric
-*   AmendmentStrategy - this is a field to indicate how to late arriving records for an existing event time. Valid values are [add | replace | replace_existing].  **add** combines the values of the existing item and the new item, **replace** replaces the metric in DynamoDB with the newly arrived item, **replace_existing** only replaces the matching metrics in the set of metrics in the item.  
-*   IsSet - indicates if the detail item contains one or more metric items [true | false]. 
-*   IsWholeNumber - indicates if the numeric metric is an integer or float value [true | false].  
-*   LastEventTimestamp - this is an integer field used to track the latest metrics  
+*   **MetricType** - a primary partition key to identity the metric
+*   **AmendmentStrategy** - this is a field to indicate how to late arriving records for an existing event time. Valid values are [add | replace | replace_existing].  **add** combines the values of the existing item and the new item, **replace** replaces the metric in DynamoDB with the newly arrived item, **replace_existing** only replaces the matching metrics in the set of metrics in the item.  
+*   **IsSet** - indicates if the detail item contains one or more metric items [true | false]. 
+*   **IsWholeNumber** - indicates if the numeric metric is an integer or float value [true | false].  
+*   **LastEventTimestamp** - this is an integer field used to track the latest metrics.  
 
 1.  Navigate to DynamoDB in the console, select **Tables** from the left side menu.
 2.  Select the radio button to select the **stack-name**-Metrics table. 
@@ -116,7 +118,7 @@ while (i < int(args.calls)):
     sys.stdout.flush()
     i+=1
 ```
-Then execute the script replacing the <BEACONURL> with the ELB for your pipeline:  
+Then execute the script replacing the **BEACONURL** with the ELB for your pipeline:  
 
 ```bash
     python generate-load-times.py <BEACONURL> 10000 0.5
@@ -134,7 +136,7 @@ Then execute the script replacing the <BEACONURL> with the ELB for your pipeline
 
 ![SQL Results](../images/2-SQL-editor.png)
 
-4.  Create a pump that takes the incoming records where the custom_metric_name is page_load_time and calculate an average over a one minute window.  
+4.  Create a pump that takes the incoming records where the **custom_metric_name** is **page_load_time** and calculate an average over a one minute window.  
 <details>
 <summary><strong>SQL Statement (expand for code)</strong></summary><p>    
 
