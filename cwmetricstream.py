@@ -61,7 +61,7 @@ def lambda_handler(event, context):
                 event_time = datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%dT%H:%M:%S')
 
             metric_field = metric['M']['METRICTYPE']['S']
-            if metric_field=='agent_count' or metric_field=='event_count' or metric_field=='referral_count' or metric_field=='top_pages':
+            if metric_field=='agent_count' or 'event_count' or 'referral_count' or 'top_pages':
                 if metric['M']['METRICITEM']['S'] == 'null':
                     event_type = metric_field + ':No referrer' # split on : later
                 else:

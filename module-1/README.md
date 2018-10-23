@@ -38,19 +38,46 @@ US West (N. Virginia) | [![Launch Module 1 in ](http://docs.aws.amazon.com/AWSCl
 7. While you wait for the CloudFormation stack to be created, download the CloudFormation template by right-clicking here and selecting **Save Link As...**: ([Module 1 Starting Template](https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-start.yaml))
 8. Open the template you just downloaded in a text editor.  If you don't have a text editor, you can download a trial of Sublime Text here: ([Sublime Text](https://www.sublimetext.com))
 
-When you see the stack showing a **CREATE_COMPLETE** status, you are ready to move on to the next step.
+</p></details>
+
+## 2. Add the Kinesis Resources by updating the existing CloudFormation Stack
+
+During this step, we'll illustrate how you would take an existing group of web or application servers and enable them to stream events to Amazon Kinesis.  You're going to update the CloudFormation stack and reconfigure the AutoScaling Group's Launch Configuration to enable the Kinesis agent to load at startup, and configure it to parse the Apache web server's access logs, and publish them to a new Kinesis delivery stream.
+
+<details>
+<summary><strong>CloudFormation Update Instructions (expand for details)</strong></summary><p>
+
+1.  Download a copy of the updated CloudFormation template here: ([Module 1 Final Template](https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-finish.yaml))
+
+2.  Navigate in the AWS Console to **Services**, **CloudFormation**, and select the stack titled `realtime-analytics-workshop`, then select **Actions**, **Update Stack**:
+
+![Updating CloudFormation Stack](../images/module-1-updatestack1.png)
+
+3.  Select the **Upload a template to Amazon S3** radio button, then click the **Choose File** button, and select the CloudFormation template you edit in the previous section:
+
+![Updating CloudFormation Stack](../images/module-1-updatestack2.png)
+
+4.  On the **Parameters** page, you can leave all fields unmodified, and click **Next**.
+5.  Click **Next** Again. (skipping IAM advanced section)
+6.  On the Review page, take a moment to review the changes that will be made to your existing CloudFormation stack.  This is an important step to ensure that you are modifying the resources in a way that you expect, and that there are no unintended changes being introduced to your CloudFormation stack.  The resource change set should look like this:
+
+![CloudFormation Change Set](../images/module-1-updatestack3.png)
+
+7.  Check the box to acknowledge that CloudFormation will create IAM resources and click **Update**.
+
+![iam-accept](../images/iam-accept.png)
+
+8. While you wait for the CloudFormation stack to be updated, review the changes we made to each section of the CloudFormation template by expanding each details section below.  You can also review the events as the CloudFormation stack updates and watch how AutoScaling performs the rolling upgrade of your existing web servers according to the Update Policy.  
+
+When you see the stack showing a **UPDATE_COMPLETE** status, you are ready to move on to the next module.
 
 </p></details>
 
-## 2. Add the Kinesis Resources to the CloudFormation Template 
+## 3. (Optional) Review the Kinesis Resources that were added to the CloudFormation stack
 
-During this step, you will create an S3 analytics bucket resource, as well as a Kinesis Firehose Delivery Stream that will deliver events to it.  You'll also need to configure an IAM role that gives the Kinesis Delivery Stream permission to deliver events to the S3 analytics bucket.
+### Note: There is no need to make any of these edits; you are simply reviewing them to see what changed.
 
-<details>
-<summary><strong>Edit the CloudFormation template (expand for details)</strong></summary><p>
-
-1.	Open the CloudFormation template you downloaded in the previous step in an editor.  
-2.	At the bottom of the **Resources** section, directly above the **Outputs** section, add the resource for the analytics S3 bucket that will receive messages delivered by the Kinesis Delivery Stream:  
+1.  The first thing that was added to the stack was an S3 analytics bucket resource, as well as a Kinesis Firehose Delivery Stream that will deliver events to it.  
 
 <details>
 <summary><strong>AnalyticsBucket Resource (expand for code)</strong></summary>
@@ -64,7 +91,7 @@ During this step, you will create an S3 analytics bucket resource, as well as a 
 
 </details>
 
-3.	Add the IAM Role and Policy that will give the Kinesis Delivery Stream permissions to deliver the events directly below the S3 bucket resource:  
+2.	The next thing that was added to the stack was an IAM Role and Policy that will give the Kinesis Delivery Stream permissions to deliver the events directly below the S3 bucket resource:  
 
 <details>
 <summary><strong>DeliveryStreamRole Resource (expand for code)</strong></summary>
@@ -110,7 +137,7 @@ Note: We are following the _principle of least privilege_ by enabling resource-l
 
 </details>
 
-4. Next, add the Kinesis Delivery Stream resource directly below the IAM Role:  
+3. We also added a Kinesis Delivery Stream resource directly below the IAM Role:  
 
 <details>
 <summary><strong>DeliveryStream Resource (expand for code)</strong></summary>
@@ -134,16 +161,17 @@ Note: By setting `IntervalInSeconds` to `60` and `SizeInMBs` to `1`, we are conf
 
 </p></details>
 
-## 3. Configure the Kinesis Agent on the AutoScaling Group of Web Servers
+## 4. (Optional) Review how the Kinesis Agent was configured on the AutoScaling Group of Web Servers
 
-Every AutoScaling Group has a Launch Configuration that is used to configure the EC2 instances when they are launched.  During this next step, you'll modify the existing Launch Configuration in the CloudFormation template, configuring the Kinesis agent to install, start automatically on boot, and stream Apache log events to the Kinesis Delivery Stream that we created in the previous section.  You'll also need to modify the EC2 instance IAM role to give the EC2 instances permission to send events to the Kinesis Delivery Stream.
+### Note: There is no need to make any of these edits; you are simply reviewing them to see what changed.
+
+Every AutoScaling Group has a Launch Configuration that is used to configure the EC2 instances when they are launched.  In these code changes, we modified the existing Launch Configuration in the CloudFormation template, configuring the Kinesis agent to install, start automatically on boot, and stream Apache log events to the Kinesis Delivery Stream that we created in the previous section.  We also modified the EC2 instance IAM role to give the EC2 instances permission to send events to the Kinesis Delivery Stream.
 
 <details>
-<summary><strong>Edit the CloudFormation template (expand for details)</strong></summary><p>
+<summary><strong>AutoScaling Launch Configuration changes (expand for details)</strong></summary><p>
 
-1.	In the CloudFormation template that you're editing from the previous step, go to line 333, which is where the `AutoScalingGroupLaunchConfig` resource definition begins.  
+1.  In the LaunchConfiguration resource, in the `Metadata` section, under `AWS::CloudFormation::Init`, `config`, `packages`, and `yum`, we added a line that contains `aws-kinesis-agent: []` 
 
-2.  In the `Metadata` section, under `AWS::CloudFormation::Init`, `config`, `packages`, and `yum`, add a line that contains `aws-kinesis-agent: []` (be sure to use the same indentation as the line with `httpd: []`)
 <details>
 <summary><strong>See this edit in context (expand for code)</strong></summary>
 
@@ -164,7 +192,7 @@ Every AutoScaling Group has a Launch Configuration that is used to configure the
 
 </details>
 
-3.  In the `files` section of the same resource, directly underneath `packages`, add the file `/etc/aws-kinesis/agent.json` with the following configuration:
+2.  In the `files` section of the same resource, directly underneath `packages`, we added the file `/etc/aws-kinesis/agent.json` with the following configuration:
 
 <details>
 <summary><strong>See this edit in context (expand for code)</strong></summary>
@@ -202,7 +230,7 @@ Every AutoScaling Group has a Launch Configuration that is used to configure the
 ```
 </details>
 
-4.  In the `commands` section of the same resource, after line number 390, add the following two commands, which will execute `chkconfig` to add the `aws-kinesis-agent` to `/etc/init.d` and enable it by symlinking it into the appropriate `/etc/rcX.d` directories so that it will launch on startup:
+3.  In the `commands` section of the same resource, after line number 390, we added the following two commands, which will execute `chkconfig` to add the `aws-kinesis-agent` to `/etc/init.d` and enable it by symlinking it into the appropriate `/etc/rcX.d` directories so that it will launch on startup:
 
 <details>
 <summary><strong>See this edit in context (expand for code)</strong></summary>
@@ -217,7 +245,7 @@ Every AutoScaling Group has a Launch Configuration that is used to configure the
 ```
 </details>
 
-5.  Next, also in the `commands` section of the same resource, after line number 408, add the following command, which will modify the Apache log format to include a data header:
+4.  Next, also in the `commands` section of the same resource, after line number 408, we added the following command, which will modify the Apache log format to include a data header:
 
 <details>
 <summary><strong>See this edit in context (expand for code)</strong></summary>
@@ -233,7 +261,7 @@ Every AutoScaling Group has a Launch Configuration that is used to configure the
 ```
 </details>
 
-6.  Next, we need to add the `aws-kinesis-agent` to the `services` section of the same resource, directly after line number 420.  This will ensure that the service is running:
+5.  Next, we also added the `aws-kinesis-agent` to the `services` section of the same resource, directly after line number 420.  This will ensure that the service is running:
 
 <details>
 <summary><strong>See this edit in context (expand for code)</strong></summary>
@@ -249,7 +277,7 @@ Every AutoScaling Group has a Launch Configuration that is used to configure the
 ```
 </details>
 
-7.  Next, we need to add a new IAM policy to the `WebServerKinesisRole` resource, which will give it permission to put event records on the Kinesis Delivery Stream.  Go to line 548 in the CloudFormation template, where the `Policies:` section begins and add the following policy statement:
+6.  Next, we added a new IAM policy to the `WebServerKinesisRole` resource, which will give it permission to put event records on the Kinesis Delivery Stream.  This is on line 548 in the CloudFormation template, where the `Policies:` section begins:
 
 <details>
 <summary><strong>See this edit in context (expand for code)</strong></summary>
@@ -274,7 +302,7 @@ Note: again, we are using resource-based permissions to implement the security b
 
 </details>
 
-8.  Finishing the CloudFormation edits, we need to make a small edit to the `UserData` section of our Launch Configuration so that AutoScaling will trigger a rolling upgrade of the web servers in our AutoScaling group, replacing them with new EC2 instances that are running the Kinesis agent.  The previous cfn-init edits we made to the Launch Configuration won't automatically trigger replacement of our EC2 instances without this.  Add `echo updated` after line 436:
+7.  Finally, we needed to make a small edit to the `UserData` section of our Launch Configuration so that AutoScaling will trigger a rolling upgrade of the web servers in our AutoScaling group, replacing them with new EC2 instances that are running the Kinesis agent.  The previous cfn-init edits we made to the Launch Configuration won't automatically trigger replacement of our EC2 instances without this.  We added `echo updated` after line 436:
 
 <details>
 <summary><strong>See this edit in context (expand for code)</strong></summary>
@@ -295,39 +323,7 @@ Note: You could also simply terminate the EC2 instances manually after updating 
 </details>
 </p></details>
 
-## 4. Update CloudFormation Stack with New and Changed Resources
-
-Now, we'll need to update the existing CloudFormation stack, which will add the new Kinesis resources, as well as update the existing resources with our changes.
-
-<details>
-<summary><strong>CloudFormation Update Instructions (expand for details)</strong></summary><p>
-
-1.	Navigate in the AWS Console to **Services**, **CloudFormation**, and select the stack titled `realtime-analytics-workshop`, then select **Actions**, **Update Stack**:
-
-![Updating CloudFormation Stack](../images/module-1-updatestack1.png)
-
-2.	Select the **Upload a template to Amazon S3** radio button, then click the **Choose File** button, and select the CloudFormation template you edit in the previous section:
-
-![Updating CloudFormation Stack](../images/module-1-updatestack2.png)
-
-3.	On the **Parameters** page, you can leave all fields unmodified, and click **Next**.
-4.	Click **Next** Again. (skipping IAM advanced section)
-5.	On the Review page, take a moment to review the changes that will be made to your existing CloudFormation stack.  This is an important step to ensure that you are modifying the resources in a way that you expect, and that there are no unintended changes being introduced to your CloudFormation stack.  The resource change set should look like this:
-
-![CloudFormation Change Set](../images/module-1-updatestack3.png)
-
-6.  Check the box to acknowledge that CloudFormation will create IAM resources and click **Update**.
-
-![iam-accept](../images/iam-accept.png)
-
-7. While you wait for the CloudFormation stack to be updated, review the events and watch how AutoScaling performs the rolling upgrade of your existing web servers according to the Update Policy. 
-8. If you run into any problems during the stack update that triggers an update rollback, you can either troubleshoot errors by looking in the **Events** section of the CloudFormation console, or you can download a working version of the finished CloudFormation template here:  ([Module 1 Final Template](https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-finish.yaml))
-
-When you see the stack showing a **UPDATE_COMPLETE** status, you are ready to move on to the next step.
-
-</p></details>
-
-## 5. Verify that the Kinesis Firehose Delivery Stream is Delivering Events to S3
+## 4. Verify that the Kinesis Firehose Delivery Stream is Delivering Events to S3
 
 To confirm that everything is setup properly, we can verify that events are being delivered from the web servers to the S3 analytics bucket by the Kinesis Firehose Delivery Stream.
 
@@ -346,6 +342,8 @@ To confirm that everything is setup properly, we can verify that events are bein
 If you see folders and objects inside the folders that were delivered by the Kinesis Firehose Delivery Stream, everything is working correctly, and you can proceed to the next module.
 
 </p></details>
+
+When you see the stack showing a **CREATE_COMPLETE** status, you are ready to move on to the next module.
 
 ### Start next module
 
