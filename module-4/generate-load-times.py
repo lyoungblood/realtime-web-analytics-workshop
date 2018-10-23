@@ -8,7 +8,7 @@ import argparse
 import time
 
 def generateRandomLoadTime():
-    return random.randomint(10,10000)
+    return random.randint(10,10000)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("target", help="<http...> the http(s) location to send the GET request")
@@ -22,7 +22,7 @@ s = requests.Session()
 while (i < int(args.calls)):
     time.sleep(float(args.delay))
     loadTime = generateRandomLoadTime()
-    headers = {'event' : 'load', 'clientid' : 'N/A', 'page' : 'page1.html', 'Referer' : 'BrowserX', 'custom_metric_name' : 'page_load_time', 'custom_metric_int_value' : loadTime }
+    headers = {'custom_metric_name' : 'page_load_time', 'custom_metric_int_value' : loadTime }
     r = s.post(args.target + '?call=' + str(i),headers=headers)
     if(r.status_code==200):
         sys.stdout.write( str(i) + "-")
