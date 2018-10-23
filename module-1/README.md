@@ -4,10 +4,6 @@
 
 In this module, you will start with an AutoScaling group of Apache web servers, and configure them to stream their log data in realtime to a Kinesis Firehose delivery stream. This will prepare for us to perform realtime analytics on the events being captured in these logs.
 
-## Architecture Overview
-
-![module-1-diagram](../images/module-1.png)
-
 ## 1. Deploy Web Servers using CloudFormation Template
 
 First we need to deploy our web servers in an AutoScaling group, with an Application Load Balancer to accept incoming connections, and scaling policies to scale out (and back in) based on incoming network traffic.
@@ -39,6 +35,12 @@ US West (N. Virginia) | [![Launch Module 1 in ](http://docs.aws.amazon.com/AWSCl
 
 </p></details>
 
+Here's what we just deployed:
+
+![module-1-diagram](../images/module-1-start.png)
+
+You can see that we have a Virtual Private Cloud (VPC) with 2 public subnets, and an Application Load Balancer that connects to a target group consisting of an AutoScaling Group with between 2 and 6 front-end web servers running Apache.  We've also added some CloudWatch alarms that will trigger AutoScaling ScaleUp/ScaleDown events based on the incoming network traffic on the web servers.  This is a typical web front-end fleet.
+
 ## 2. Add the Kinesis Resources by updating the existing CloudFormation Stack
 
 During this step, we'll illustrate how you would take an existing group of web or application servers and enable them to stream events to Amazon Kinesis.  You're going to update the CloudFormation stack and reconfigure the AutoScaling Group's Launch Configuration to enable the Kinesis agent to load at startup, and configure it to parse the Apache web server's access logs, and publish them to a new Kinesis delivery stream.
@@ -52,7 +54,7 @@ During this step, we'll illustrate how you would take an existing group of web o
 
 ![Updating CloudFormation Stack](../images/module-1-updatestack1.png)
 
-3.  Select the **Upload a template to Amazon S3** radio button, then click the **Choose File** button, and select the CloudFormation template you edit in the previous section:
+3.  Select the **Upload a template to Amazon S3** radio button, then click the **Choose File** button, and select the CloudFormation template named `1-frontend-module-finish.yaml`:
 
 ![Updating CloudFormation Stack](../images/module-1-updatestack2.png)
 
@@ -66,9 +68,15 @@ During this step, we'll illustrate how you would take an existing group of web o
 
 ![iam-accept](../images/iam-accept.png)
 
-8. While you wait for the CloudFormation stack to be updated, review the changes we made to each section of the CloudFormation template by expanding each details section below.  You can also review the events as the CloudFormation stack updates and watch how AutoScaling performs the rolling upgrade of your existing web servers according to the Update Policy.  
+8. While you wait for the CloudFormation stack to be updated, review the changes we made to each section of the CloudFormation template by expanding each details section below.  You can also review the events as the CloudFormation stack updates and watch how AutoScaling performs the rolling upgrade of your existing web servers according to the Update Policy.
 
-When you see the stack showing a **UPDATE_COMPLETE** status, you are ready to move on to the next module.
+Here's what we just deployed:
+
+![module-1-diagram](../images/module-1-start.png)
+
+You can see that we've now added the Kinesis Agent to our web servers, and they are delivering their Apache access logs to a Kinesis Firehose delivery stream, which is then putting the events in an S3 bucket for later batch analysis.
+
+While you wait for the stack to finish updating and reach **UPDATE_COMPLETE** status, you can move on to the next steps and review the changes we just made to the CloudFormation stack.
 
 </p></details>
 
@@ -322,7 +330,39 @@ Note: You could also simply terminate the EC2 instances manually after updating 
 </details>
 </p></details>
 
-## 4. Verify that the Kinesis Firehose Delivery Stream is Delivering Events to S3
+## 4. Generating Random Web Traffic for Processing
+
+In this section you will execute a python script that posts http header data to your front end web servers.  To make it easy we added an output variable in the stack that contains the command line needed to generate web traffic sent to your ELB.  
+
+<details>
+<summary><strong>Execute the python script to simulate web traffic. (expand for details)</strong></summary><p>
+
+1.  In the AWS Console select CloudFormation to view the Stacks and check the box to the left of your stack that you just updated. 
+
+![Select Stack](../images/2-select-stack.png)
+
+2.  Select the Outputs tab to display the output variables for your stack. 
+3.  Locate the DataGenerator key and copy the Value from the browser.
+
+![Outputs](../images/2-outputs.png)
+
+<details>
+<summary><strong>Example Command (expand for details)</strong></summary>
+
+```bash
+  python ./test-beacon.py http://realt-Appli-1P8C8FJ52YGXM-EXAMPLE.us-east-1.elb.amazonaws.com/beacon 20000 0.5
+```
+
+*  The first parameter is the address for the load balancer.  Your DNS entry will be different than the example here.
+*  The second parameter is the number of requests to send before ending the script.  In this case the script will simulate 20,000 web requests.
+*  The last parameter is the number of seconds to delay between sending requests.  Using these values the script should generate data for over two hours. 
+4.  Open a terminal or command window, naviagte to the folder that contains the test-beacon.py script and execute the command.  If the post messages are sent successfully to the load balancer, you should see an incrementing count in the terminal window.  You can leave this running for the rest of the workshop. 
+
+</details>
+
+</details>
+
+## 5. Verify that the Kinesis Firehose Delivery Stream is Delivering Events to S3
 
 To confirm that everything is setup properly, we can verify that events are being delivered from the web servers to the S3 analytics bucket by the Kinesis Firehose Delivery Stream.
 

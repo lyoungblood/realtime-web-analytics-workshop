@@ -79,41 +79,9 @@ When you see the stack showing a **CREATE_COMPLETE** status, you are ready to mo
 
 </p></details>  
 
-Your stack will take a few minutes to deploy.  When the status for the stack changes to UPDATE_COMPLETE or CREATE_COMPLETE you can proceed to the next section.  
+Your stack will take a few minutes to deploy.  When the status for the stack changes to UPDATE_COMPLETE or CREATE_COMPLETE you can proceed to the next section.
 
-## 2. Generating Random Web Traffic for Processing
-
-In this section you will execute a python script that posts http header data to your front end web servers.  To make it easy we added an output variable in the stack that contains the command line needed to generate web traffic sent to your ELB.  
-
-<details>
-<summary><strong>Execute the python script to simulate web traffic. (expand for details)</strong></summary><p>
-
-1.  In the AWS Console select CloudFormation to view the Stacks and check the box to the left of your stack that you just updated. 
-
-![Select Stack](../images/2-select-stack.png)
-
-2.  Select the Outputs tab to display the output variables for your stack. 
-3.  Locate the DataGenerator key and copy the Value from the browser.  
-
-![Outputs](../images/2-outputs.png)
-
-<details>
-<summary><strong>Example Command (expand for details)</strong></summary>
-
-```bash
-	python ./test-beacon.py http://realt-Appli-1P8C8FJ52YGXM-EXAMPLE.us-east-1.elb.amazonaws.com/beacon 20000 0.5
-```
-
-*  The first parameter is the address for the load balancer.  Your DNS entry will be different than the example here.
-*  The second parameter is the number of requests to send before ending the script.  In this case the script will simulate 20,000 web requests.
-*  The last parameter is the number of seconds to delay between sending requests.  Using these values the script should generate data for over two hours. 
-4.  Open a terminal or command window, naviagte to the folder that contains the test-beacon.py script and execute the command.  If the post messages are sent successfully to the load balancer, you should see an incrementing count in the terminal window.  You can leave this running for the rest of the workshop. 
-
-</details>
-
-</details>
-
-## 3. Manually Updating the Kinesis Analytics Application in the Console 
+## 2. Manually Updating the Kinesis Analytics Application in the Console 
 
 In this step we are going to manually add the SQL and destination stream in Kinesis Analytics through the console.  This is to allow you to get familiaar with Kinesis Analyitics and see the effects of modifying SQL and inspecting the in application streams.  
 
