@@ -36,7 +36,6 @@ US West (N. Virginia) | [![Launch Module 1 in ](http://docs.aws.amazon.com/AWSCl
 ![iam-accept](../images/iam-accept.png)
 
 7. While you wait for the CloudFormation stack to be created, download the CloudFormation template by right-clicking here and selecting **Save Link As...**: ([Module 1 Starting Template](https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-start.yaml))
-8. Open the template you just downloaded in a text editor.  If you don't have a text editor, you can download a trial of Sublime Text here: ([Sublime Text](https://www.sublimetext.com))
 
 </p></details>
 
@@ -47,7 +46,7 @@ During this step, we'll illustrate how you would take an existing group of web o
 <details>
 <summary><strong>CloudFormation Update Instructions (expand for details)</strong></summary><p>
 
-1.  Download a copy of the updated CloudFormation template here: ([Module 1 Final Template](https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-finish.yaml))
+1.  Download a copy of the updated CloudFormation template here: ([Module 1 Final Template](../blob/master/module-1/1-frontend-module-finish.yaml))
 
 2.  Navigate in the AWS Console to **Services**, **CloudFormation**, and select the stack titled `realtime-analytics-workshop`, then select **Actions**, **Update Stack**:
 
