@@ -46,7 +46,7 @@ During this step, we'll illustrate how you would take an existing group of web o
 <details>
 <summary><strong>CloudFormation Update Instructions (expand for details)</strong></summary><p>
 
-1.  Download a copy of the updated CloudFormation template here: ([Module 1 Final Template](./1-frontend-module-finish.yaml))
+1.  Use your previously downloaded copy of the updated CloudFormation template from here (this was downloaded to the `realtime-web-analytics-workshop/module-1/` folder when you cloned the GitHub repository): ([Module 1 Final Template](1-frontend-module-finish.yaml))
 
 2.  Navigate in the AWS Console to **Services**, **CloudFormation**, and select the stack titled `realtime-analytics-workshop`, then select **Actions**, **Update Stack**:
 
