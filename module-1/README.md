@@ -31,8 +31,6 @@ US West (N. Virginia) | [![Launch Module 1 in ](http://docs.aws.amazon.com/AWSCl
 
 ![iam-accept](../images/iam-accept.png)
 
-7. While you wait for the CloudFormation stack to be created, download the CloudFormation template by right-clicking here and selecting **Save Link As...**: ([Module 1 Starting Template](https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-start.yaml))
-
 Here's what we just deployed:
 
 ![module-1-diagram](../images/module-1-start.png)
