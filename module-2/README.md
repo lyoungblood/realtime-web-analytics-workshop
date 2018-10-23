@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In this module, you will use the CloudFormation template to update your solution to include a Kinesis Analytics application, Lambda function and two DynamoDB talbes.  You will then start the Kinesis Analytics application, update the SQL, add a destination, and connect the destination to the Lambda function.  
+In this module, you will use CloudFormation to add a Kinesis Analytics application, Lambda function and two DynamoDB talbes.  You will then start the Kinesis Analytics application, update the SQL, add a destination, and connect the destination to the Lambda function.  
 
 ## Architecture Overview of Module #2 Components
 
@@ -187,7 +187,7 @@ You should now have data flowing through the pipeline into the **stack-name**-Me
 
 </details>  
 
-Note: The template **2-kinesis-analytics-module-completed.yaml** contains the changes that were manually completed in this module.  
+Note: The template **2-kinesis-analytics-module-completed.yaml** contains the changes that were manually completed in this module.  If you update the stack with this template, the Kinesis Data Application will not be started.  After updating the template go to Kinesis and start the WebMetricsApplication manually. The custom resource helper also has a function to start the application manually but it has not been included in this workshop. 
 
 ### Start next module
 
