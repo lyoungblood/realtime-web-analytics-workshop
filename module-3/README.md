@@ -336,7 +336,7 @@ US West (N. Virginia) | [![Launch Dashboard in ](http://docs.aws.amazon.com/AWSC
 
 3.  Navigate in the console to **Services**, **CloudWatch**, then click **Dashboards** on the left side of the screen, and select the dashboard that was just created to view it:
 
-![Create CloudWatch Graph 13](../images/module-3-cloudwatch12.png)
+![Create CloudWatch Graph 13](../images/module-3-cloudwatch13.png)
 
 Congratulations!  You are now finished with module 3.
 
