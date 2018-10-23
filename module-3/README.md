@@ -257,7 +257,7 @@ def lambda_handler(event, context):
 
 </p></details>
 
-## 4. Visualizing Metrics with CloudWatch
+## 4. Visualizing Metrics with CloudWatch Graphs
 
 In this step, we'll create a graph from the CloudWatch metrics that are now being published from DynamoDB Streams by our Lambda function.
 
@@ -315,6 +315,32 @@ Note: In a real-world environment, you would configure the Alarm to take actions
 13.  Next, click on the **Graph options** tab and scroll down until you see the **Horizontal annotations** section.  Click the **Add horizontal annotation** link, and fill it in as shown in the screenshot below, clicking the right-arrow in the **Axis** column, filling in `2` in the **Value** column, and typing `Anomaly Threshold` in the **Label** column:
 
 ![Create CloudWatch Graph 12](../images/module-3-cloudwatch12.png)
+
+</p></details>
+
+## 4. Visualizing Metrics with CloudWatch Dashboards
+
+Now that you've seen how easy it is to create your own graphs from CloudWatch metrics in the console, you can deploy a pre-created CloudWatch dashboard through CloudFormation.
+
+<details>
+<summary><strong>CloudFormation Launch Instructions (expand for details)</strong></summary><p>
+
+1.  Right click the **Launch Stack** link below and "open in new tab"
+
+Region| Launch
+------|-----
+US West (Oregon) | [![Launch Dashboard in ](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/images/cloudformation-launch-stack-button.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=realtime-analytics-workshop&templateURL=https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-start.yaml)
+US West (N. Virginia) | [![Launch Dashboard in ](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/images/cloudformation-launch-stack-button.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=realtime-analytics-workshop&templateURL=https://s3-us-west-2.amazonaws.com/realtime-analytics-workshop/1-frontend-module-start.yaml)
+
+2.  Give the stack a name, such as `cloudwatch-dashboard`, and click **Next** until the stack launches.
+
+3.  Navigate in the console to **Services**, **CloudWatch**, then click **Dashboards** on the left side of the screen, and select the dashboard that was just created to view it:
+
+![Create CloudWatch Graph 13](../images/module-3-cloudwatch12.png)
+
+Congratulations!  You are now finished with module 3.
+
+</p></details>
 
 ### Start next module
 
