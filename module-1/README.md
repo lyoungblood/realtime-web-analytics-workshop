@@ -78,95 +78,7 @@ While you wait for the stack to finish updating and reach **UPDATE_COMPLETE** st
 
 </p></details>
 
-## 3. (Optional) Review the Kinesis Resources that were added to the CloudFormation stack
-
-### Note: There is no need to make any of these edits; you are simply reviewing them to see what changed.
-
-1.  The first thing that was added to the stack was an S3 analytics bucket resource, as well as a Kinesis Firehose Delivery Stream that will deliver events to it.  
-
-<details>
-<summary><strong>AnalyticsBucket Resource (expand for code)</strong></summary>
-
-```YAML
-# Kinesis Application
-  AnalyticsBucket:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
-```
-
-</details>
-
-2.	The next thing that was added to the stack was an IAM Role and Policy that will give the Kinesis Delivery Stream permissions to deliver the events directly below the S3 bucket resource:  
-
-<details>
-<summary><strong>DeliveryStreamRole Resource (expand for code)</strong></summary>
-
-```YAML
-  DeliveryStreamRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - firehose.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      Policies:
-        - PolicyName: s3Access
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Sid: ''
-                Effect: Allow
-                Action:
-                  - s3:AbortMultipartUpload
-                  - s3:GetBucketLocation
-                  - s3:GetObject
-                  - s3:ListBucket
-                  - s3:ListBucketMultipartUploads
-                  - s3:PutObject
-                Resource:
-                  - !Sub '${AnalyticsBucket.Arn}'
-                  - !Sub '${AnalyticsBucket.Arn}/*'
-              - Sid: ''
-                Effect: Allow
-                Action:
-                  - logs:PutLogEvents
-                Resource:
-                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/*:log-stream:*'
-```
-Note: We are following the _principle of least privilege_ by enabling resource-level permissions and referencing the `AnalyticsBucket` as `!Sub '${AnalyticsBucket.Arn}'`
-
-</details>
-
-3. We also added a Kinesis Delivery Stream resource directly below the IAM Role:  
-
-<details>
-<summary><strong>DeliveryStream Resource (expand for code)</strong></summary>
-
-```YAML
-  DeliveryStream:
-    Type: AWS::KinesisFirehose::DeliveryStream
-    Properties:
-      DeliveryStreamType: DirectPut
-      S3DestinationConfiguration:
-        BucketARN: !Sub '${AnalyticsBucket.Arn}'
-        BufferingHints:
-          IntervalInSeconds: '60'
-          SizeInMBs: '1'
-        CompressionFormat: UNCOMPRESSED
-        RoleARN: !GetAtt 'DeliveryStreamRole.Arn'
-```
-Note: By setting `IntervalInSeconds` to `60` and `SizeInMBs` to `1`, we are configuring the Kinesis Delivery Stream to deliver events to the S3 bucket whenever either 60 seconds has elapsed, or more than 1MB of event data is in the stream.  Whenever either of these conditions is met, the events will be delivered.
-
-</details>
-
-</p></details>
-
-## 4. (Optional) Review how the Kinesis Agent was configured on the AutoScaling Group of Web Servers
+## 3. (Optional) Review how the Kinesis Agent was configured on the AutoScaling Group of Web Servers
 
 ### Note: There is no need to make any of these edits; you are simply reviewing them to see what changed.
 
@@ -328,7 +240,95 @@ Note: You could also simply terminate the EC2 instances manually after updating 
 </details>
 </p></details>
 
-## 4. Generating Random Web Traffic for Processing
+## 4. (Optional) Review the Kinesis Resources that were added to the CloudFormation stack
+
+### Note: There is no need to make any of these edits; you are simply reviewing them to see what changed.
+
+1.  The first thing that was added to the stack was an S3 analytics bucket resource, as well as a Kinesis Firehose Delivery Stream that will deliver events to it.  
+
+<details>
+<summary><strong>AnalyticsBucket Resource (expand for code)</strong></summary>
+
+```YAML
+# Kinesis Application
+  AnalyticsBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+```
+
+</details>
+
+2.	The next thing that was added to the stack was an IAM Role and Policy that will give the Kinesis Delivery Stream permissions to deliver the events directly below the S3 bucket resource:  
+
+<details>
+<summary><strong>DeliveryStreamRole Resource (expand for code)</strong></summary>
+
+```YAML
+  DeliveryStreamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - firehose.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: s3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ''
+                Effect: Allow
+                Action:
+                  - s3:AbortMultipartUpload
+                  - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:ListBucketMultipartUploads
+                  - s3:PutObject
+                Resource:
+                  - !Sub '${AnalyticsBucket.Arn}'
+                  - !Sub '${AnalyticsBucket.Arn}/*'
+              - Sid: ''
+                Effect: Allow
+                Action:
+                  - logs:PutLogEvents
+                Resource:
+                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/*:log-stream:*'
+```
+Note: We are following the _principle of least privilege_ by enabling resource-level permissions and referencing the `AnalyticsBucket` as `!Sub '${AnalyticsBucket.Arn}'`
+
+</details>
+
+3. We also added a Kinesis Delivery Stream resource directly below the IAM Role:  
+
+<details>
+<summary><strong>DeliveryStream Resource (expand for code)</strong></summary>
+
+```YAML
+  DeliveryStream:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !Sub '${AnalyticsBucket.Arn}'
+        BufferingHints:
+          IntervalInSeconds: '60'
+          SizeInMBs: '1'
+        CompressionFormat: UNCOMPRESSED
+        RoleARN: !GetAtt 'DeliveryStreamRole.Arn'
+```
+Note: By setting `IntervalInSeconds` to `60` and `SizeInMBs` to `1`, we are configuring the Kinesis Delivery Stream to deliver events to the S3 bucket whenever either 60 seconds has elapsed, or more than 1MB of event data is in the stream.  Whenever either of these conditions is met, the events will be delivered.
+
+</details>
+
+</p></details>
+
+## 5. Generating Random Web Traffic for Processing
 
 In this section you will execute a python script that posts http header data to your front end web servers.  To make it easy we added an output variable in the stack that contains the command line needed to generate web traffic sent to your ELB.  
 
@@ -360,7 +360,7 @@ In this section you will execute a python script that posts http header data to 
 
 </details>
 
-## 5. Verify that the Kinesis Firehose Delivery Stream is Delivering Events to S3
+## 6. Verify that the Kinesis Firehose Delivery Stream is Delivering Events to S3
 
 To confirm that everything is setup properly, we can verify that events are being delivered from the web servers to the S3 analytics bucket by the Kinesis Firehose Delivery Stream.
 
