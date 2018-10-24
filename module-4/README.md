@@ -182,14 +182,10 @@ If you have made it to this point in the Workshop you are a real time analytics 
 *   Create a notification email when the event_anomaly score exceeds a threshold of 2.0.  Create a new **stream** in SQL that will contain the anomaly records.  Copy the existing ANOMALY_EVENT_PUMP statement and add it back with a new name.  Change the stream that is being inserted into to the anomaly stream just created.  Add a WHERE clause to only emit events that are sufficiently anomalous **WHERE AnomalyScore > 2.0**.  Create a Lambda function that sends an SNS message to a topic that is subscribed to by SES. Create a new destination in your Kinesis application for your anomaly stream and connect it to the Lambda function.  The data generated from the **test-becon.py** script is random but evenly distributed across the possible values.  The anomaly detection functionality will identify this normal pattern and therefore likely emit a score lower than 2.0.  To create an anomaly run the **click-burst.py** script which will elevate the click count for 3 minutes elevating the anomaly scores.
 
 
-## License
+## License Summary
 
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
-Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
-
-http://aws.amazon.com/apache2.0/
-
-or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+This sample code is made available under a modified MIT license. See the LICENSE file.
 
 [Back to the main workshop page](../README.md)

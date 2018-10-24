@@ -346,14 +346,10 @@ Congratulations!  You are now finished with module 3.
 
 Module 4: [Adding Custom Metrics and Extending the Solution](../module-4/README.md)
 
-## License
+## License Summary
 
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
-Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
-
-http://aws.amazon.com/apache2.0/
-
-or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+This sample code is made available under a modified MIT license. See the LICENSE file.
 
 [Back to the main workshop page](../README.md)
