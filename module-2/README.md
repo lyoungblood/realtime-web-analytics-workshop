@@ -159,7 +159,7 @@ Note: The template **2-kinesis-analytics-module-completed.yaml** contains the ch
 
 ### Start next module
 
-Module 3: [Creating a CloudWatch Dashboard](../module-3/README.md)
+Module 3: [Visualizing Metrics using CloudWatch Dashboards](../module-3/README.md)
 
 ## License
 

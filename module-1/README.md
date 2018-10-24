@@ -34,7 +34,6 @@ US West (N. Virginia) | [![Launch Module 1 in ](http://docs.aws.amazon.com/AWSCl
 Here's what we just deployed:
 
 ![module-1-diagram](../images/module-1-start.png)
-
 You can see that we have a Virtual Private Cloud (VPC) with 2 public subnets, and an Application Load Balancer that connects to a target group consisting of an AutoScaling Group with between 2 and 6 front-end web servers running Apache.  We've also added some CloudWatch alarms that will trigger AutoScaling ScaleUp/ScaleDown events based on the incoming network traffic on the web servers.  This is a typical web front-end fleet.
 
 </p></details>
@@ -71,7 +70,6 @@ During this step, we'll illustrate how you would take an existing group of web o
 Here's what we just deployed:
 
 ![module-1-diagram](../images/module-1.png)
-
 You can see that we've now added the Kinesis Agent to our web servers, and they are delivering their Apache access logs to a Kinesis Firehose delivery stream, which is then putting the events in an S3 bucket for later batch analysis.
 
 While you wait for the stack to finish updating and reach **UPDATE_COMPLETE** status, you can move on to the next steps and review the changes we just made to the CloudFormation stack.
@@ -215,7 +213,7 @@ Every AutoScaling Group has a Launch Configuration that is used to configure the
         - PolicyName: ssmagent
 <line 560>
 ```
-Note: again, we are using resource-based permissions to implement the security best practice of least privileges, by referring to `!GetAtt 'DeliveryStream.Arn'`
+Note: again, we are using resource-based permissions to implement the security best practice of least privilege, by referring to `!GetAtt 'DeliveryStream.Arn'`
 
 </details>
 
