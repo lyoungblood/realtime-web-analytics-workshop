@@ -41,7 +41,7 @@ You can see that we have a Virtual Private Cloud (VPC) with 2 public subnets, an
 
 ## 2. Add the Kinesis Resources by updating the existing CloudFormation Stack
 
-During this step, we'll illustrate how you would take an existing group of web or application servers and enable them to stream events to Amazon Kinesis.  You're going to update the CloudFormation stack and reconfigure the AutoScaling Group's Launch Configuration to enable the Kinesis agent to load at startup, and configure it to parse the Apache web server's access logs, and publish them to a new Kinesis delivery stream.
+During this step, we'll illustrate how you would take an existing group of web or application servers and enable them to stream events to Amazon Kinesis.  You're going to update the CloudFormation stack and reconfigure the AutoScaling Group's Launch Configuration to enable the Kinesis agent to load at startup, configure it to parse the Apache web server's access logs, and publish them to a new Kinesis delivery stream.
 
 <details>
 <summary><strong>CloudFormation Update Instructions (expand for details)</strong></summary><p>
@@ -66,11 +66,11 @@ During this step, we'll illustrate how you would take an existing group of web o
 
 ![iam-accept](../images/iam-accept.png)
 
-8. While you wait for the CloudFormation stack to be updated, review the changes we made to each section of the CloudFormation template by expanding each details section below.  You can also review the events as the CloudFormation stack updates and watch how AutoScaling performs the rolling upgrade of your existing web servers according to the Update Policy.
+8. While you wait for the CloudFormation stack to be updated, review the changes we made to each section of the CloudFormation template by expanding each details section in steps 3 and 4 below.  You can also review the events as the CloudFormation stack updates and watch how AutoScaling performs the rolling upgrade of your existing web servers according to the Update Policy.
 
 Here's what we just deployed:
 
-![module-1-diagram](../images/module-1-start.png)
+![module-1-diagram](../images/module-1.png)
 
 You can see that we've now added the Kinesis Agent to our web servers, and they are delivering their Apache access logs to a Kinesis Firehose delivery stream, which is then putting the events in an S3 bucket for later batch analysis.
 
